@@ -1,0 +1,1 @@
+-Projeto de banco de dados para um Manager de mesa de RPG
