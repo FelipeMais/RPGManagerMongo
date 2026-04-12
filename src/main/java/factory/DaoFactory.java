@@ -2,6 +2,10 @@ package factory;
 
 import connection.ConnectionConfig;
 import connection.SqlConnection;
+import dao.MagicSqlDAO;
+import dao.contracts.MagicDAO;
+
+import java.sql.Connection;
 
 //basicamente essa classe vai centralizar todos os ifs possiveis ne if SQL / NOSQL
 public class DaoFactory {
@@ -21,20 +25,20 @@ public class DaoFactory {
         }
     }
 
-//    public static CharacterDao getCharacterDao() {
-//        if (sharedConnection == null) init(); // Garante que está conectado
-//
-//        if ("SQL".equalsIgnoreCase(dbType)) {
-//            return new CharacterSqlDao((Connection) sharedConnection);
-//        }
-//        return new CharacterMongoDao((MongoClient) sharedConnection);
-//    }
-//
-//    // Metodo para fechar no final da execução
-//    public static void close() {
-//        if (sharedConnection != null) {
-//            System.out.println("Conexão global fechada com sucesso.");
-//        }
-//    }
+    public static MagicDAO getMagicDAO() {
+        if (sharedConnection == null) init(); // Garante que está conectado
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new MagicSqlDAO((Connection) sharedConnection);
+        }
+        return null;//caso do NOSQL
+    }
+
+    // Metodo para fechar no final da execução
+    public static void close() {
+        if (sharedConnection != null) {
+            System.out.println("Conexão global fechada com sucesso.");
+        }
+    }
 }
 
