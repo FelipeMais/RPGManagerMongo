@@ -13,6 +13,30 @@ CREATE TABLE IF NOT EXISTS EscolaMagia (
     descricao TEXT
 );
 
+CREATE TABLE IF NOT EXISTS Vantagem (
+    id_vantagem SERIAL PRIMARY KEY,
+    nome_vantagem VARCHAR(100) NOT NULL,
+    descr_vantagem TEXT
+);
+
+CREATE TABLE IF NOT EXISTS Habilidades (
+    id_habilidade SERIAL PRIMARY KEY,
+    nome_habilidade VARCHAR(100) NOT NULL,
+    descr_habilidade TEXT,
+    atributo_base VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Especie (
+    id_especie SERIAL PRIMARY KEY,
+    nome_especie VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Classe (
+    id_classe SERIAL PRIMARY KEY,
+    nome_classe VARCHAR(100) NOT NULL,
+    descricao TEXT
+);
+
 CREATE TABLE IF NOT EXISTS Qualidades (
     id_qualidade SERIAL PRIMARY KEY,
     nome_qualidade VARCHAR(100) NOT NULL
@@ -24,6 +48,31 @@ CREATE TABLE IF NOT EXISTS Itens (
     descricao TEXT,
     peso DECIMAL(10,2),
     valor_monetario INT
+);
+
+CREATE TABLE IF NOT EXISTS Ficha (
+    id_ficha SERIAL PRIMARY KEY,
+    id_classe INT REFERENCES Classe(id_classe),
+    id_especie INT REFERENCES Especie(id_especie),
+    pontos_vida_max INT NOT NULL,
+    pontos_mana_max INT NOT NULL,
+    forca INT DEFAULT 10,
+    destreza INT DEFAULT 10,
+    constituicao INT DEFAULT 10,
+    inteligencia INT DEFAULT 10,
+    sabedoria INT DEFAULT 10,
+    carisma INT DEFAULT 10,
+    nivel INT DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS Personagem (
+    id_personagem SERIAL PRIMARY KEY,
+    id_ficha INT REFERENCES Ficha(id_ficha),
+    local_atual INT REFERENCES Local(id_local),
+    nome_personagem VARCHAR(255) NOT NULL,
+    pontos_vida INT NOT NULL,
+    pontos_mana INT NOT NULL,
+    historia TEXT
 );
 
 CREATE TABLE IF NOT EXISTS TipoLocal (
@@ -56,63 +105,13 @@ CREATE TABLE IF NOT EXISTS AcaoCombate (
     id_action SERIAL PRIMARY KEY,
     id_combate INT REFERENCES Combate(id_combate),
     id_tipo_acao_combate INT REFERENCES TipoAcaoCombate(id_tipo_acao_combate),
-    id_ator INT REFERENCES Ficha(id_ficha),
-    id_alvo INT REFERENCES Ficha(id_ficha),
+    id_ator INT REFERENCES Personagem(id_personagem),
+    id_alvo INT REFERENCES Personagem(id_personagem),
     id_item_usado INT REFERENCES Itens(id_item),
     id_magia_usada INT REFERENCES Magias(id_magia),
     ordem_turno INT,
     valor_resultado INT -- Damage, Healing, or Roll result
 );
-
-CREATE TABLE IF NOT EXISTS Vantagem (
-    id_vantagem SERIAL PRIMARY KEY,
-    nome_vantagem VARCHAR(100) NOT NULL,
-    descr_vantagem TEXT
-);
-
-CREATE TABLE IF NOT EXISTS Habilidades (
-    id_habilidade SERIAL PRIMARY KEY,
-    nome_habilidade VARCHAR(100) NOT NULL,
-    descr_habilidade TEXT,
-    atributo_base VARCHAR(50) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS Especie (
-    id_especie SERIAL PRIMARY KEY,
-    nome_especie VARCHAR(100) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS Classe (
-    id_classe SERIAL PRIMARY KEY,
-    nome_classe VARCHAR(100) NOT NULL,
-    descricao TEXT
-);
-
-CREATE TABLE IF NOT EXISTS Ficha (
-    id_ficha SERIAL PRIMARY KEY,
-    id_classe INT REFERENCES Classe(id_classe),
-    id_especie INT REFERENCES Especie(id_especie),
-    pontos_vida_max INT NOT NULL,
-    pontos_mana_max INT NOT NULL,
-    forca INT DEFAULT 10,
-    destreza INT DEFAULT 10,
-    constituicao INT DEFAULT 10,
-    inteligencia INT DEFAULT 10,
-    sabedoria INT DEFAULT 10,
-    carisma INT DEFAULT 10,
-    nivel INT DEFAULT 1
-);
-
-CREATE TABLE IF NOT EXISTS Personagem (
-    id_personagem SERIAL PRIMARY KEY,
-    id_ficha INT REFERENCES Ficha(id_ficha),
-    local_atual INT REFERENCES Local(id_local),
-    nome_personagem VARCHAR(255) NOT NULL,
-    pontos_vida INT NOT NULL,
-    pontos_mana INT NOT NULL,
-    historia TEXT
-);
-
 
 CREATE TABLE IF NOT EXISTS Jogador (
     id_jogador SERIAL PRIMARY KEY,
