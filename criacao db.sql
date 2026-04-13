@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS Magias (
     nome_magia VARCHAR(255) NOT NULL,
     descricao TEXT,
     custo_mana INT,
-    nivel_minimo INT,
+    nivel_minimo INT NOT NULL,
     dados VARCHAR(50) -- e.g., '2d6+4'
 );
 
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS Itens (
     nome_item VARCHAR(255) NOT NULL,
     descricao TEXT,
     peso DECIMAL(10,2),
-    valor_monetario INT
+    valor_monetario INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Ficha (
@@ -65,33 +65,33 @@ CREATE TABLE IF NOT EXISTS Ficha (
     nivel INT DEFAULT 1
 );
 
-CREATE TABLE IF NOT EXISTS Personagem (
-    id_personagem SERIAL PRIMARY KEY,
-    id_ficha INT REFERENCES Ficha(id_ficha),
-    local_atual INT REFERENCES Local(id_local),
-    nome_personagem VARCHAR(255) NOT NULL,
-    pontos_vida INT NOT NULL,
-    pontos_mana INT NOT NULL,
-    historia TEXT
-);
-
 CREATE TABLE IF NOT EXISTS TipoLocal (
     id_tipo_local SERIAL PRIMARY KEY,
     nome_tipo_local VARCHAR(100) NOT NULL,
     descricao TEXT
 );
 
-CREATE TABLE IF NOT EXISTS Local (
-    id_local SERIAL PRIMARY KEY,
-    local_pai INT REFERENCES Local(id_local),
-    id_tipo_local INT REFERENCES TipoLocal(id_tipo_local),
+CREATE TABLE IF NOT EXISTS Localidade (
+    id_localidade SERIAL PRIMARY KEY,
+    local_pai INT REFERENCES Localidade(id_localidade),
+    id_tipo_local INT REFERENCES TipoLocal(id_tipo_local) NOT NULL,
     nome_local VARCHAR(255) NOT NULL,
     descricao TEXT
 );
 
+CREATE TABLE IF NOT EXISTS Personagem (
+    id_personagem SERIAL PRIMARY KEY,
+    id_ficha INT REFERENCES Ficha(id_ficha),
+    local_atual INT REFERENCES Localidade(id_localidade),
+    nome_personagem VARCHAR(255) NOT NULL,
+    pontos_vida INT NOT NULL,
+    pontos_mana INT NOT NULL,
+    historia TEXT
+);
+
 CREATE TABLE IF NOT EXISTS Combate (
     id_combate SERIAL PRIMARY KEY,
-    id_local INT REFERENCES Local(id_local),
+    id_localidade INT REFERENCES Localidade(id_localidade) NOT NULL,
     data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     sumario TEXT
 );
@@ -103,14 +103,14 @@ CREATE TABLE IF NOT EXISTS TipoAcaoCombate (
 
 CREATE TABLE IF NOT EXISTS AcaoCombate (
     id_action SERIAL PRIMARY KEY,
-    id_combate INT REFERENCES Combate(id_combate),
-    id_tipo_acao_combate INT REFERENCES TipoAcaoCombate(id_tipo_acao_combate),
-    id_ator INT REFERENCES Personagem(id_personagem),
+    id_combate INT REFERENCES Combate(id_combate) NOT NULL,
+    id_tipo_acao_combate INT REFERENCES TipoAcaoCombate(id_tipo_acao_combate) NOT NULL,
+    id_agente INT REFERENCES Personagem(id_personagem) NOT NULL,
     id_alvo INT REFERENCES Personagem(id_personagem),
     id_item_usado INT REFERENCES Itens(id_item),
     id_magia_usada INT REFERENCES Magias(id_magia),
-    ordem_turno INT,
-    valor_resultado INT -- Damage, Healing, or Roll result
+    ordem_turno INT  NOT NULL,
+    valor_resultado INT NOT NULL -- Damage, Healing, or Roll result
 );
 
 CREATE TABLE IF NOT EXISTS Jogador (
