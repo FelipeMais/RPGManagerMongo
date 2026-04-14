@@ -19,8 +19,8 @@ public class UI {
         System.out.println(insertTextInLine(subTitle, separator, width));
     }
 
-    public static void printOption(UserOption userOption) {
-        printOption(userOption.getOptionNumber(), userOption.getOptionDescription());
+    public static void printOption(Option option) {
+        printOption(option.getOptionNumber(), option.getName());
     }
 
     public static void printOption(Integer optionNumber, String optionName) {

@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface MagicDAO {
     public void insert(Magic newMagic) throws SQLException;
-    public void remove();
-    public Magic findById();
+    public void remove(Integer magicId) throws SQLException;
+    public Magic findById(Integer idMagia);
     public List<Magic> listAll();
     //...adicionar outros métodos especificos
 }
