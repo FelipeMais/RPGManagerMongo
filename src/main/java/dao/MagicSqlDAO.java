@@ -30,12 +30,16 @@ public class MagicSqlDAO implements MagicDAO {
     }
 
     @Override
-    public void remove() {
-
+    public void remove(Integer magicId) throws SQLException {
+        PreparedStatement st;
+        st = connection.prepareStatement("DELETE FROM magias WHERE id_magia = ?");
+        st.setInt(1, magicId);
+        st.execute();
+        st.close();
     }
 
     @Override
-    public Magic findById() {
+    public Magic findById(Integer idMagia) {
         return null;
     }
 

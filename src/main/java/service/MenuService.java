@@ -1,8 +1,7 @@
 package service;
 
-import util.enums.MenuUserOption;
+import util.Option;
 import util.UI;
-import util.UserOption;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,39 +9,56 @@ import java.util.List;
 import java.util.Scanner;
 
 public class MenuService {
+    public String menuTitle;
+    public List<Option> menuOptions;
 
-    /// importante ver como vai ficar distribuido as opções menu
-    public static void printMenu() {
-        UI.printSubTitle("OPÇÕES");
-        List<UserOption> optionsList = new ArrayList<>(List.of(MenuUserOption.values()));
-        for(UserOption option : optionsList) {
+    public MenuService(String menuTitle, List<Option> menuOptions) {
+        this.menuTitle = menuTitle;
+        this.menuOptions = menuOptions;
+    }
+
+    public MenuService() {
+        this.menuTitle = "";
+        this.menuOptions = new ArrayList<>();
+        menuOptions.add(new Option(0, "VOLTAR", () -> {return false;}));
+    }
+
+    public boolean execute() throws SQLException {
+        printMenu();
+        Integer userOption = getUserOption(menuOptions.size());
+        if(userOption ==  null) {
+            return false;
+        }
+
+        processUserOption(userOption);
+        return true;
+    }
+
+    private void printMenu() {
+        UI.printSubTitle(menuTitle);
+        for(Option option : menuOptions) {
             UI.printOption(option);
         }
         UI.printLine();
     }
 
-    public static Integer getUserChoice(int maxChoice) {
-        System.out.println("Digite a sua opção:");
+    private Integer getUserOption(int maxChoice) {
+        System.out.print("Digite a sua opção:");
         Scanner sc = new Scanner(System.in);
         int choice = sc.nextInt();
-        if(choice > maxChoice) {
+        if(choice > maxChoice || choice <= 0) {
             return null;
         }
         return choice;
     }
-    //basicamente para adicionar uma opção é só adicionar no enum e aqui
-    public static void processUserOption(int option) throws SQLException {
-        MenuUserOption userOption = MenuUserOption.getByNumber(option);
-        switch (userOption) {
-            case GERENCIAR_MAGIAS:
-                new MagicService().manage();
+
+
+    private void processUserOption(int option) throws SQLException {
+        for(Option menuOption : menuOptions) {
+            if(menuOption.getOptionNumber().equals(option)) {
+                menuOption.getFunction().get();
                 break;
-            case null:
-                break;
-            default:
-                break;
+            }
         }
     }
-
-
 }

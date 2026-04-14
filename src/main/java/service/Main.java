@@ -16,19 +16,14 @@ public class Main {
 
         boolean validAction = true;
         while (validAction) {
-            MenuService.printMenu();
-            Integer userOption = MenuService.getUserChoice(MenuUserOption.getMaxOption());
-            if(userOption == null) {
-                validAction = false;
-                continue;
+            MainMenuService menu = new MainMenuService();
+            Boolean opcaoValida = menu.execute();
+            if(!opcaoValida){
+                return;
             }
-            MenuService.processUserOption(userOption);
-
-
-
         }
 
         UI.printTitle("FIM DA EXECUÇÃO");
-
     }
+
 }
