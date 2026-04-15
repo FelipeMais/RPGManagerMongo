@@ -1,7 +1,6 @@
 package service;
 
 import factory.DaoFactory;
-import util.enums.MenuUserOption;
 import util.UI;
 
 import java.sql.SQLException;
@@ -17,12 +16,13 @@ public class Main {
         boolean validAction = true;
         while (validAction) {
             MainMenuService menu = new MainMenuService();
-            Boolean opcaoValida = menu.execute();
+            boolean opcaoValida = menu.execute();
             if(!opcaoValida){
-                return;
+                validAction = false;
             }
         }
 
+        DaoFactory.close();
         UI.printTitle("FIM DA EXECUÇÃO");
     }
 
