@@ -1,5 +1,8 @@
 package model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class Magic {
     private Integer id;
     private String name;
@@ -16,6 +19,17 @@ public class Magic {
         this.minLevel = minLevel;
         this.dices = dices;
     }
+
+    public static Magic fromResultSet(ResultSet result) throws SQLException {
+        return new Magic(
+                result.getInt(1),
+                result.getString(2),
+                result.getString(3),
+                result.getInt(4),
+                result.getInt(5),
+                result.getString(6));
+    }
+
 
     public Integer getId() {
         return id;

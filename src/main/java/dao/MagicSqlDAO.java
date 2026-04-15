@@ -1,11 +1,11 @@
 package dao;
 
-import dao.contracts.MagicDAO;
+import contracts.MagicDAO;
 import model.Magic;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class MagicSqlDAO implements MagicDAO {
@@ -39,12 +39,31 @@ public class MagicSqlDAO implements MagicDAO {
     }
 
     @Override
-    public Magic findById(Integer idMagia) {
+    public Magic findById(Integer magicId) throws SQLException {
+        List<Magic> list = new ArrayList<>();
+        PreparedStatement st = connection.prepareStatement("SELECT * FROM magias WHERE id_magia = ?");
+        st.setInt(1, magicId);
+        ResultSet result = st.executeQuery();
+        while(result.next()) {
+            list.add(Magic.fromResultSet(result));
+        }
+        st.close();
+        if(!list.isEmpty()){
+            return list.getFirst();
+        }
         return null;
+
     }
 
     @Override
-    public List<Magic> listAll() {
-        return List.of();
+    public List<Magic> listAll() throws SQLException {
+        List<Magic> list = new ArrayList<>();
+        Statement st = connection.createStatement();
+        String sql = "SELECT * FROM magias";
+        ResultSet result = st.executeQuery(sql);
+        while(result.next()) {
+            list.add(Magic.fromResultSet(result));
+        }
+        return list;
     }
 }
