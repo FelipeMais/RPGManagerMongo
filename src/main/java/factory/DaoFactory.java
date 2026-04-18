@@ -2,39 +2,124 @@ package factory;
 
 import connection.ConnectionConfig;
 import connection.SqlConnection;
+import contracts.DataBaseConnection;
+import contracts.LocationDAO;
+import contracts.LocationTypeDAO;
+import contracts.MagicDAO;
+import contracts.MagicAttributeDAO;
+import contracts.PlayerDAO;
+import contracts.AttributeDAO;
+import contracts.RpgClassDAO;
+import contracts.SpeciesDAO;
+import dao.AttributeSqlDAO;
+import dao.LocationSqlDAO;
+import dao.LocationTypeSqlDAO;
+import dao.MagicAttributeSqlDAO;
+import dao.MagicSqlDAO;
+import dao.PlayerSqlDAO;
+import dao.RpgClassSqlDAO;
+import dao.SpeciesSqlDAO;
 
-//basicamente essa classe vai centralizar todos os ifs possiveis ne if SQL / NOSQL
+import java.sql.Connection;
+
 public class DaoFactory {
-    // Variável estática para manter a conexão viva durante toda a execução
-    private static Object sharedConnection;
-    private static String dbType = "SQL";
 
-    // Metodo para inicializar a conexão no início do programa (Main)
+    private static Object sharedConnection;
+    private static DataBaseConnection<?> dbManager;
+    private final static String dbType = "SQL";
+
     public static void init() {
         if (sharedConnection == null) {
             if ("SQL".equalsIgnoreCase(dbType)) {
                 ConnectionConfig config = new ConnectionConfig();
-                sharedConnection = new SqlConnection().connect(config);
+
+                dbManager = new SqlConnection();
+                sharedConnection = dbManager.connect(config);
+
             } else {
-                // Lógica para NoSQL
+                // Logica para NoSQL
             }
         }
     }
 
-//    public static CharacterDao getCharacterDao() {
-//        if (sharedConnection == null) init(); // Garante que está conectado
-//
-//        if ("SQL".equalsIgnoreCase(dbType)) {
-//            return new CharacterSqlDao((Connection) sharedConnection);
-//        }
-//        return new CharacterMongoDao((MongoClient) sharedConnection);
-//    }
-//
-//    // Metodo para fechar no final da execução
-//    public static void close() {
-//        if (sharedConnection != null) {
-//            System.out.println("Conexão global fechada com sucesso.");
-//        }
-//    }
-}
+    public static MagicDAO getMagicDAO() {
+        if (sharedConnection == null) init();
 
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new MagicSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static RpgClassDAO getRpgClassDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new RpgClassSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static PlayerDAO getPlayerDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new PlayerSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static AttributeDAO getAttributeDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new AttributeSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static MagicAttributeDAO getMagicAttributeDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new MagicAttributeSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static SpeciesDAO getSpeciesDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new SpeciesSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static LocationDAO getLocationDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new LocationSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static LocationTypeDAO getLocationTypeDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new LocationTypeSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static void close() {
+        if (dbManager != null) {
+            dbManager.closeConnection();
+            dbManager = null;
+            sharedConnection = null;
+            System.out.println("Fabrica de DAOs encerrada.");
+        }
+    }
+}
