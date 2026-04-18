@@ -13,14 +13,8 @@ public class Main {
 
         UI.printTitle("INICIO DA EXECUÇÃO");
 
-        boolean validAction = true;
-        while (validAction) {
-            MainMenuService menu = new MainMenuService();
-            boolean opcaoValida = menu.execute();
-            if(!opcaoValida){
-                validAction = false;
-            }
-        }
+        MainMenuService menu = new MainMenuService();
+        while (menu.execute()) { }
 
         DaoFactory.close();
         UI.printTitle("FIM DA EXECUÇÃO");

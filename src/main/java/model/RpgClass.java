@@ -8,6 +8,10 @@ public class RpgClass {
     private String className;
     private String description;
 
+    public RpgClass(String className, String description) {
+        this(null, className, description);
+    }
+
     public RpgClass(Integer idClass, String className, String description) {
         this.idClass = idClass;
         this.className = className;

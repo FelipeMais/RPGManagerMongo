@@ -22,11 +22,10 @@ public class RpgClassSqlDAO implements RpgClassDAO {
     @Override
     public void insert(RpgClass newRpgClass) throws SQLException {
         PreparedStatement st = connection.prepareStatement(
-                "INSERT INTO classe(id_classe, nome_classe, descricao) VALUES (?, ?, ?)"
+                "INSERT INTO classe(nome_classe, descricao) VALUES (?, ?)"
         );
-        st.setInt(1, newRpgClass.getIdClass());
-        st.setString(2, newRpgClass.getClassName());
-        st.setString(3, newRpgClass.getDescription());
+        st.setString(1, newRpgClass.getClassName());
+        st.setString(2, newRpgClass.getDescription());
         st.execute();
         st.close();
     }

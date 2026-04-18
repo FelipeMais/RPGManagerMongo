@@ -25,7 +25,7 @@ public class RpgClassService extends MenuService {
 
     private Boolean create() {
         try {
-            RpgClass newRpgClass = instantiateRpgClass();
+            RpgClass newRpgClass = instantiateRpgClass(false);
             rpgClassDAO.insert(newRpgClass);
         } catch (Exception err) {
             System.out.println("Erro ao criar nova classe!");
@@ -35,7 +35,7 @@ public class RpgClassService extends MenuService {
 
     private Boolean update() {
         try {
-            RpgClass updatedRpgClass = instantiateRpgClass();
+            RpgClass updatedRpgClass = instantiateRpgClass(true);
             rpgClassDAO.update(updatedRpgClass);
         } catch (Exception err) {
             System.out.println("Erro ao atualizar classe!");
@@ -43,12 +43,14 @@ public class RpgClassService extends MenuService {
         return true;
     }
 
-    private RpgClass instantiateRpgClass() {
+    private RpgClass instantiateRpgClass(Boolean askId) {
         Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Digite o ID da classe: ");
-        Integer id = scanner.nextInt();
-        scanner.nextLine();
+        Integer id = null;
+        if (askId) {
+            System.out.print("Digite o ID da classe: ");
+            id = scanner.nextInt();
+            scanner.nextLine();
+        }
 
         System.out.print("Digite o nome da classe: ");
         String name = scanner.nextLine();
@@ -56,7 +58,10 @@ public class RpgClassService extends MenuService {
         System.out.print("Digite a descricao: ");
         String description = scanner.nextLine();
 
-        return new RpgClass(id, name, description);
+        if (askId) {
+            return new RpgClass(id, name, description);
+        }
+        return new RpgClass(name, description);
     }
 
     private Boolean remove() {

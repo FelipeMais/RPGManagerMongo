@@ -25,7 +25,7 @@ public class MagicService extends MenuService {
 
     private Boolean create() {
         try {
-            Magic newMagic = instantiateMagic();
+            Magic newMagic = instantiateMagic(false);
             magicDAO.insert(newMagic);
         } catch (Exception err) {
             System.out.println("Erro ao criar nova magia!");
@@ -35,7 +35,7 @@ public class MagicService extends MenuService {
 
     private Boolean update() {
         try {
-            Magic updatedMagic = instantiateMagic();
+            Magic updatedMagic = instantiateMagic(true);
             magicDAO.update(updatedMagic);
         } catch (Exception err) {
             System.out.println("Erro ao atualizar magia!");
@@ -43,12 +43,14 @@ public class MagicService extends MenuService {
         return true;
     }
 
-    private Magic instantiateMagic() {
+    private Magic instantiateMagic(Boolean askId) {
         Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Digite o ID da magia: ");
-        Integer id = scanner.nextInt();
-        scanner.nextLine();
+        Integer id = null;
+        if (askId) {
+            System.out.print("Digite o ID da magia: ");
+            id = scanner.nextInt();
+            scanner.nextLine();
+        }
 
         System.out.print("Digite o nome da magia: ");
         String name = scanner.nextLine();
@@ -66,7 +68,10 @@ public class MagicService extends MenuService {
         System.out.print("Digite os dados (ex: 2d6, 1d20): ");
         String dices = scanner.nextLine();
 
-        return new Magic(id, name, description, manaCost, minLevel, dices);
+        if (askId) {
+            return new Magic(id, name, description, manaCost, minLevel, dices);
+        }
+        return new Magic(name, description, manaCost, minLevel, dices);
     }
 
     private Boolean remove() {

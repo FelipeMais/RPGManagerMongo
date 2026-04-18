@@ -3,10 +3,14 @@ package factory;
 import connection.ConnectionConfig;
 import connection.SqlConnection;
 import contracts.DataBaseConnection;
+import contracts.LocationDAO;
+import contracts.LocationTypeDAO;
 import contracts.MagicDAO;
 import contracts.PlayerDAO;
 import contracts.RpgClassDAO;
 import contracts.SpeciesDAO;
+import dao.LocationSqlDAO;
+import dao.LocationTypeSqlDAO;
 import dao.MagicSqlDAO;
 import dao.PlayerSqlDAO;
 import dao.RpgClassSqlDAO;
@@ -66,6 +70,24 @@ public class DaoFactory {
 
         if ("SQL".equalsIgnoreCase(dbType)) {
             return new SpeciesSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static LocationDAO getLocationDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new LocationSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static LocationTypeDAO getLocationTypeDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new LocationTypeSqlDAO((Connection) sharedConnection);
         }
         return null;
     }

@@ -22,12 +22,11 @@ public class PlayerSqlDAO implements PlayerDAO {
     @Override
     public void insert(Player newPlayer) throws SQLException {
         PreparedStatement st = connection.prepareStatement(
-                "INSERT INTO jogador(id_jogador, nome_jogador, data_entrada, ativo) VALUES (?, ?, ?, ?)"
+                "INSERT INTO jogador(nome_jogador, data_entrada, ativo) VALUES (?, ?, ?)"
         );
-        st.setInt(1, newPlayer.getId());
-        st.setString(2, newPlayer.getName());
-        st.setTimestamp(3, newPlayer.getEntryDate());
-        st.setBoolean(4, newPlayer.getActive());
+        st.setString(1, newPlayer.getName());
+        st.setTimestamp(2, newPlayer.getEntryDate());
+        st.setBoolean(3, newPlayer.getActive());
         st.execute();
         st.close();
     }

@@ -10,6 +10,10 @@ public class Player {
     private Timestamp entryDate;
     private Boolean active;
 
+    public Player(String name, Timestamp entryDate, Boolean active) {
+        this(null, name, entryDate, active);
+    }
+
     public Player(Integer id, String name, Timestamp entryDate, Boolean active) {
         this.id = id;
         this.name = name;

@@ -20,40 +20,43 @@ public class MenuService {
 
     public boolean execute() throws SQLException {
         printMenu();
-        Integer userOption = getUserOption(menuOptions.size());
-        if(userOption ==  null) {
+        Integer userOption = getUserOption();
+        if (userOption == null) {
             return false;
         }
 
-        processUserOption(userOption);
-        return true;
+        return processUserOption(userOption);
     }
 
     private void printMenu() {
         UI.printSubTitle(menuTitle);
-        for(Option option : menuOptions) {
+        for (Option option : menuOptions) {
             UI.printOption(option);
         }
         UI.printLine();
     }
 
-    private Integer getUserOption(int maxChoice) {
-        System.out.print("Digite a sua opção:");
+    private Integer getUserOption() {
+        int maxChoice = menuOptions.stream()
+                .mapToInt(Option::getOptionNumber)
+                .max()
+                .orElse(0);
+
+        System.out.print("Digite a sua opcao:");
         Scanner sc = new Scanner(System.in);
         int choice = sc.nextInt();
-        if(choice > maxChoice || choice <= 0) {
+        if (choice > maxChoice || choice < 0) {
             return null;
         }
         return choice;
     }
 
-
-    private void processUserOption(int option) {
-        for(Option menuOption : menuOptions) {
-            if(menuOption.getOptionNumber().equals(option)) {
-                menuOption.getFunction().get();
-                break;
+    private Boolean processUserOption(int option) {
+        for (Option menuOption : menuOptions) {
+            if (menuOption.getOptionNumber().equals(option)) {
+                return menuOption.getFunction().get();
             }
         }
+        return false;
     }
 }
