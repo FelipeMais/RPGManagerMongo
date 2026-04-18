@@ -8,6 +8,7 @@ public class MainMenuService extends MenuService {
     private final LocationService locationService;
     private final MagicService magicService;
     private final PlayerService playerService;
+    private final AttributeService attributeService;
     private final RpgClassService rpgClassService;
     private final SpeciesService speciesService;
 
@@ -15,6 +16,7 @@ public class MainMenuService extends MenuService {
         this.locationService = new LocationService();
         this.magicService = new MagicService();
         this.playerService = new PlayerService();
+        this.attributeService = new AttributeService();
         this.rpgClassService = new RpgClassService();
         this.speciesService = new SpeciesService();
         this.menuTitle = "MENU PRINCIPAL";
@@ -23,6 +25,7 @@ public class MainMenuService extends MenuService {
         this.menuOptions.add(new Option(3, "GERENCIAR JOGADORES", this::executarGerenciamentoJogadores));
         this.menuOptions.add(new Option(4, "GERENCIAR ESPECIES", this::executarGerenciamentoEspecies));
         this.menuOptions.add(new Option(5, "GERENCIAR LOCAIS", this::executarGerenciamentoLocais));
+        this.menuOptions.add(new Option(6, "GERENCIAR ATRIBUTOS", this::executarGerenciamentoAtributos));
     }
 
     private Boolean executarGerenciamentoMagias() {
@@ -67,6 +70,15 @@ public class MainMenuService extends MenuService {
             return true;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao gerenciar locais", e);
+        }
+    }
+
+    private Boolean executarGerenciamentoAtributos() {
+        try {
+            while (attributeService.execute()) { }
+            return true;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao gerenciar atributos", e);
         }
     }
 }
