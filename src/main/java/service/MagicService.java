@@ -3,9 +3,12 @@ package service;
 import contracts.MagicDAO;
 import factory.DaoFactory;
 import model.Magic;
+import model.Attribute;
+import model.relationship.MagicAttribute;
 import util.Option;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -43,7 +46,7 @@ public class MagicService extends MenuService {
         return true;
     }
 
-    private Magic instantiateMagic(Boolean askId) {
+    private Magic instantiateMagic(Boolean askId) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         Integer id = null;
         if (askId) {
@@ -69,9 +72,43 @@ public class MagicService extends MenuService {
         String dices = scanner.nextLine();
 
         if (askId) {
-            return new Magic(id, name, description, manaCost, minLevel, dices);
+            return new Magic(id, name, description, manaCost, minLevel, dices, Collections.emptyList());
         }
-        return new Magic(name, description, manaCost, minLevel, dices);
+        List<MagicAttribute> magicQualitiesList = getAttributes(id);
+        return new Magic(name, description, manaCost, minLevel, dices, magicQualitiesList);
+    }
+
+    private List<MagicAttribute> getAttributes(Integer magicId) throws SQLException{
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Deseja adicionar atributo a magia?[S]/[N]");
+        String addAttributes = scanner.nextLine();
+        if(!addAttributes.equals("S")){
+            return new ArrayList<>();
+        }
+        AttributeService attributeService = new AttributeService();
+        List<MagicAttribute> attributes = new ArrayList<>();
+        boolean addAttribute = true;
+        while (addAttribute) {
+            System.out.print("Id do atributo (Digite '0' para encerrar): ");
+            Integer attributeId = scanner.nextInt();
+
+            if(attributeId == 0) {
+                addAttribute = false;
+                continue;
+            }
+
+            Attribute attributeFound = attributeService.findAttributeById(attributeId);
+            if(attributeFound == null) {
+                System.out.println("Atributo não encontrado! Digite outro id!");
+                continue;
+            }
+
+            System.out.print("Valor para o atributo da magia:");
+            Integer attrubuteValue = scanner.nextInt();
+
+            attributes.add(new MagicAttribute(magicId, attributeId, attrubuteValue));
+        }
+        return attributes;
     }
 
     private Boolean remove() {
