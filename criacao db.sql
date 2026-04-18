@@ -7,11 +7,6 @@ CREATE TABLE IF NOT EXISTS Magias (
     dados VARCHAR(50) -- e.g., '2d6+4'
 );
 
-CREATE TABLE IF NOT EXISTS EscolaMagia (
-    id_escola_magia SERIAL PRIMARY KEY,
-    nome_escola_magia VARCHAR(100) NOT NULL,
-    descricao TEXT
-);
 
 CREATE TABLE IF NOT EXISTS Qualidades (
     id_qualidade SERIAL PRIMARY KEY,
@@ -64,12 +59,6 @@ CREATE TABLE IF NOT EXISTS AcaoCombate (
     valor_resultado INT -- Damage, Healing, or Roll result
 );
 
-CREATE TABLE IF NOT EXISTS Vantagem (
-    id_vantagem SERIAL PRIMARY KEY,
-    nome_vantagem VARCHAR(100) NOT NULL,
-    descr_vantagem TEXT
-);
-
 CREATE TABLE IF NOT EXISTS Habilidades (
     id_habilidade SERIAL PRIMARY KEY,
     nome_habilidade VARCHAR(100) NOT NULL,
@@ -105,6 +94,7 @@ CREATE TABLE IF NOT EXISTS Ficha (
 
 CREATE TABLE IF NOT EXISTS Personagem (
     id_personagem SERIAL PRIMARY KEY,
+    id_jogador INT REFERENCES Jogador(id_jogador),
     id_ficha INT REFERENCES Ficha(id_ficha),
     local_atual INT REFERENCES Local(id_local),
     nome_personagem VARCHAR(255) NOT NULL,
@@ -121,16 +111,6 @@ CREATE TABLE IF NOT EXISTS Jogador (
     ativo BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE IF NOT EXISTS TipoControle (
-    id_tipo_controle SERIAL PRIMARY KEY,
-    nome_tipo_controle VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS MagiaEscola(
-    id_escola_magia INT REFERENCES EscolaMagia(id_escola_magia),
-    id_magia INT REFERENCES Magias(id_magia),
-    PRIMARY KEY (id_escola_magia, id_magia)
-);
 
 CREATE TABLE IF NOT EXISTS MagiaCaracteristicas(
     id_qualidade INT REFERENCES Qualidades(id_qualidade),
@@ -159,18 +139,6 @@ CREATE TABLE IF NOT EXISTS MagiasConhecidas (
     PRIMARY KEY (id_magia, id_ficha)
 );
 
-CREATE TABLE IF NOT EXISTS FichaEscolaMagia (
-    id_ficha INT REFERENCES Ficha(id_ficha),
-    id_escola_magia INT REFERENCES EscolaMagia(id_escola_magia),
-    PRIMARY KEY (id_ficha, id_escola_magia)
-);
-
-CREATE TABLE IF NOT EXISTS FichaVantagens (
-    id_vantagem INT REFERENCES Vantagem(id_vantagem),
-    id_ficha INT REFERENCES Ficha(id_ficha),
-    PRIMARY KEY (id_ficha, id_vantagem)
-);
-
 CREATE TABLE IF NOT EXISTS FichaHabilidades (
     id_habilidade INT REFERENCES Habilidades(id_habilidade),
     id_ficha INT REFERENCES Ficha(id_ficha),
@@ -181,12 +149,4 @@ CREATE TABLE IF NOT EXISTS Combatentes (
     id_combate INT REFERENCES Combate(id_combate),
     id_personagem INT REFERENCES Personagem(id_personagem),
     PRIMARY KEY (id_combate, id_personagem)
-);
-
-CREATE TABLE IF NOT EXISTS ControladorPersonagem(
-    id_personagem INT REFERENCES Personagem(id_personagem),
-    id_jogador INT REFERENCES Jogador(id_jogador),
-    id_tipo_controle INT REFERENCES TipoControle(id_tipo_controle),
-    data_posse TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id_personagem, id_jogador, id_tipo_controle)
 );
