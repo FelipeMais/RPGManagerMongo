@@ -1,25 +1,37 @@
 package model.relationship;
 
+import model.Attribute;
+
 public class MagicAttribute {
     private Integer magicId;
-    private Integer qualityId;
+    private Integer attributeId;
     private Integer value;
+    private Attribute attribute;
 
-    public MagicAttribute(Integer magicId, Integer qualityId, Integer value) {
+    public MagicAttribute(Integer magicId, Integer attributeId, Integer value) {
+        this(magicId, attributeId, value, null);
+    }
+
+    public MagicAttribute(Integer magicId, Integer attributeId, Integer value, Attribute attribute) {
         this.magicId = magicId;
-        this.qualityId = qualityId;
+        this.attributeId = attributeId;
         this.value = value;
+        this.attribute = attribute;
     }
 
     public Integer getMagicId() {
         return magicId;
     }
 
-    public Integer getQualityId() {
-        return qualityId;
+    public Integer getAttributeId() {
+        return attributeId;
     }
 
     public Integer getValue() {
         return value;
+    }
+
+    public Attribute getAttribute() {
+        return attribute;
     }
 }

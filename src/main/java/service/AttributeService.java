@@ -14,7 +14,7 @@ public class AttributeService extends MenuService {
     private final AttributeDAO attributeDAO;
 
     public AttributeService() throws SQLException {
-        this.attributeDAO = DaoFactory.getQualityDAO();
+        this.attributeDAO = DaoFactory.getAttributeDAO();
         this.menuTitle = "GERENCIAR ATRIBUTOS";
         this.menuOptions.add(new Option(1, "INCLUIR ATRIBUTO", this::create));
         this.menuOptions.add(new Option(2, "ATUALIZAR ATRIBUTO", this::update));
@@ -25,7 +25,7 @@ public class AttributeService extends MenuService {
 
     private Boolean create() {
         try {
-            Attribute newAttribute = instantiateQuality(false);
+            Attribute newAttribute = instantiateAttribute(false);
             attributeDAO.insert(newAttribute);
         } catch (Exception err) {
             System.out.println("Erro ao criar novo atributo!");
@@ -35,7 +35,7 @@ public class AttributeService extends MenuService {
 
     private Boolean update() {
         try {
-            Attribute updatedAttribute = instantiateQuality(true);
+            Attribute updatedAttribute = instantiateAttribute(true);
             attributeDAO.update(updatedAttribute);
         } catch (Exception err) {
             System.out.println("Erro ao atualizar atributo!");
@@ -43,7 +43,7 @@ public class AttributeService extends MenuService {
         return true;
     }
 
-    private Attribute instantiateQuality(Boolean askId) {
+    private Attribute instantiateAttribute(Boolean askId) {
         Scanner scanner = new Scanner(System.in);
         Integer id = null;
         if (askId) {
@@ -65,8 +65,8 @@ public class AttributeService extends MenuService {
         try {
             Scanner scanner = new Scanner(System.in);
             System.out.print("Id do atributo: ");
-            Integer qualityId = scanner.nextInt();
-            attributeDAO.remove(qualityId);
+            Integer attributeId = scanner.nextInt();
+            attributeDAO.remove(attributeId);
         } catch (Exception err) {
             System.out.println("Erro ao remover atributo!");
         }
@@ -77,8 +77,8 @@ public class AttributeService extends MenuService {
         try {
             Scanner scanner = new Scanner(System.in);
             System.out.print("Id do atributo: ");
-            Integer qualityId = scanner.nextInt();
-            Attribute attribute = findAttributeById(qualityId);
+            Integer attributeId = scanner.nextInt();
+            Attribute attribute = findAttributeById(attributeId);
             if (attribute == null) {
                 System.out.println("Atributo nao encontrado");
                 return false;
@@ -89,26 +89,27 @@ public class AttributeService extends MenuService {
         }
         return true;
     }
-    public Attribute findAttributeById(Integer qualityId) throws SQLException{
-        return attributeDAO.findById(qualityId);
+
+    public Attribute findAttributeById(Integer attributeId) throws SQLException {
+        return attributeDAO.findById(attributeId);
     }
 
 
     private Boolean listAll() {
         try {
-            List<Attribute> qualities = attributeDAO.listAll();
-            print(qualities);
+            List<Attribute> attributes = attributeDAO.listAll();
+            print(attributes);
         } catch (Exception err) {
             System.out.println("Erro ao buscar atributos!");
         }
         return true;
     }
 
-    private void print(List<Attribute> qualities) {
+    private void print(List<Attribute> attributes) {
         System.out.print("ID | ");
         System.out.print("NOME | ");
         System.out.print("\n");
-        for (Attribute attribute : qualities) {
+        for (Attribute attribute : attributes) {
             System.out.print(attribute.getId() + pipe());
             System.out.print(attribute.getName() + pipe());
             System.out.print("\n");

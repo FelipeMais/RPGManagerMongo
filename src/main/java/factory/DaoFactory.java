@@ -6,15 +6,17 @@ import contracts.DataBaseConnection;
 import contracts.LocationDAO;
 import contracts.LocationTypeDAO;
 import contracts.MagicDAO;
+import contracts.MagicAttributeDAO;
 import contracts.PlayerDAO;
 import contracts.AttributeDAO;
 import contracts.RpgClassDAO;
 import contracts.SpeciesDAO;
+import dao.AttributeSqlDAO;
 import dao.LocationSqlDAO;
 import dao.LocationTypeSqlDAO;
+import dao.MagicAttributeSqlDAO;
 import dao.MagicSqlDAO;
 import dao.PlayerSqlDAO;
-import dao.AttributeSqlDAO;
 import dao.RpgClassSqlDAO;
 import dao.SpeciesSqlDAO;
 
@@ -67,11 +69,20 @@ public class DaoFactory {
         return null;
     }
 
-    public static AttributeDAO getQualityDAO() {
+    public static AttributeDAO getAttributeDAO() {
         if (sharedConnection == null) init();
 
         if ("SQL".equalsIgnoreCase(dbType)) {
             return new AttributeSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static MagicAttributeDAO getMagicAttributeDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new MagicAttributeSqlDAO((Connection) sharedConnection);
         }
         return null;
     }

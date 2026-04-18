@@ -1,9 +1,10 @@
 package service;
 
+import contracts.AttributeDAO;
 import contracts.MagicDAO;
 import factory.DaoFactory;
-import model.Magic;
 import model.Attribute;
+import model.Magic;
 import model.relationship.MagicAttribute;
 import util.Option;
 
@@ -14,9 +15,11 @@ import java.util.List;
 import java.util.Scanner;
 
 public class MagicService extends MenuService {
+    private final AttributeDAO attributeDAO;
     private final MagicDAO magicDAO;
 
     public MagicService() throws SQLException {
+        this.attributeDAO = DaoFactory.getAttributeDAO();
         this.magicDAO = DaoFactory.getMagicDAO();
         this.menuTitle = "GERENCIAR MAGIAS";
         this.menuOptions.add(new Option(1, "INCLUIR MAGIA", this::create));
@@ -71,44 +74,62 @@ public class MagicService extends MenuService {
         System.out.print("Digite os dados (ex: 2d6, 1d20): ");
         String dices = scanner.nextLine();
 
+        List<MagicAttribute> attributes = getAttributes();
         if (askId) {
-            return new Magic(id, name, description, manaCost, minLevel, dices, Collections.emptyList());
+            return new Magic(id, name, description, manaCost, minLevel, dices, attributes);
         }
-        List<MagicAttribute> magicQualitiesList = getAttributes(id);
-        return new Magic(name, description, manaCost, minLevel, dices, magicQualitiesList);
+        return new Magic(name, description, manaCost, minLevel, dices, attributes);
     }
 
-    private List<MagicAttribute> getAttributes(Integer magicId) throws SQLException{
+    private List<MagicAttribute> getAttributes() throws SQLException {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Deseja adicionar atributo a magia?[S]/[N]");
+        System.out.print("Deseja adicionar atributos a magia? [S]/[N]: ");
         String addAttributes = scanner.nextLine();
-        if(!addAttributes.equals("S")){
+        if (!addAttributes.equalsIgnoreCase("S")) {
             return new ArrayList<>();
         }
-        AttributeService attributeService = new AttributeService();
+
         List<MagicAttribute> attributes = new ArrayList<>();
         boolean addAttribute = true;
         while (addAttribute) {
-            System.out.print("Id do atributo (Digite '0' para encerrar): ");
+            System.out.print("Id do atributo (0 para encerrar): ");
             Integer attributeId = scanner.nextInt();
 
-            if(attributeId == 0) {
+            if (attributeId == 0) {
                 addAttribute = false;
+                scanner.nextLine();
                 continue;
             }
 
-            Attribute attributeFound = attributeService.findAttributeById(attributeId);
-            if(attributeFound == null) {
-                System.out.println("Atributo não encontrado! Digite outro id!");
+            if (containsAttribute(attributes, attributeId)) {
+                System.out.println("Atributo ja adicionado para esta magia.");
+                scanner.nextLine();
                 continue;
             }
 
-            System.out.print("Valor para o atributo da magia:");
-            Integer attrubuteValue = scanner.nextInt();
+            Attribute attributeFound = attributeDAO.findById(attributeId);
+            if (attributeFound == null) {
+                System.out.println("Atributo nao encontrado! Digite outro id.");
+                scanner.nextLine();
+                continue;
+            }
 
-            attributes.add(new MagicAttribute(magicId, attributeId, attrubuteValue));
+            System.out.print("Valor para o atributo da magia: ");
+            Integer attributeValue = scanner.nextInt();
+            scanner.nextLine();
+
+            attributes.add(new MagicAttribute(null, attributeId, attributeValue, attributeFound));
         }
         return attributes;
+    }
+
+    private boolean containsAttribute(List<MagicAttribute> attributes, Integer attributeId) {
+        for (MagicAttribute attribute : attributes) {
+            if (attribute.getAttributeId().equals(attributeId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Boolean remove() {
@@ -157,6 +178,7 @@ public class MagicService extends MenuService {
         System.out.print("CUSTO DE MANA | ");
         System.out.print("NIVEL MINIMO | ");
         System.out.print("DADOS | ");
+        System.out.print("ATRIBUTOS | ");
         System.out.print("\n");
         for (Magic magic : magicList) {
             System.out.print(magic.getId() + pipe());
@@ -165,8 +187,24 @@ public class MagicService extends MenuService {
             System.out.print(magic.getManaCost() + pipe());
             System.out.print(magic.getMinLevel() + pipe());
             System.out.print(magic.getDices() + pipe());
+            System.out.print(formatAttributes(magic.getAttributes()) + pipe());
             System.out.print("\n");
         }
+    }
+
+    private String formatAttributes(List<MagicAttribute> attributes) {
+        if (attributes == null || attributes.isEmpty()) {
+            return "-";
+        }
+
+        List<String> values = new ArrayList<>();
+        for (MagicAttribute attribute : attributes) {
+            String attributeName = attribute.getAttribute() != null
+                    ? attribute.getAttribute().getName()
+                    : attribute.getAttributeId().toString();
+            values.add(attributeName + "(" + attribute.getValue() + ")");
+        }
+        return String.join(", ", values);
     }
 
     private String pipe() {

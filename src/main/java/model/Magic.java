@@ -68,4 +68,8 @@ public class Magic {
     public List<MagicAttribute> getAttributes() {
         return attributes;
     }
+
+    public void setAttributes(List<MagicAttribute> attributes) {
+        this.attributes = attributes;
+    }
 }
