@@ -6,7 +6,6 @@ import model.Magic;
 import util.Option;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -18,9 +17,10 @@ public class MagicService extends MenuService {
         this.magicDAO = DaoFactory.getMagicDAO();
         this.menuTitle = "GERENCIAR MAGIAS";
         this.menuOptions.add(new Option(1, "INCLUIR MAGIA", this::create));
-        this.menuOptions.add(new Option(2, "REMOVER MAGIA", this::remove));
-        this.menuOptions.add(new Option(3, "BUSCAR MAGIA", this::findById));
-        this.menuOptions.add(new Option(4, "LISTAR MAGIAS", this::listAll));
+        this.menuOptions.add(new Option(2, "ALTERAR MAGIA", this::update));
+        this.menuOptions.add(new Option(3, "REMOVER MAGIA", this::remove));
+        this.menuOptions.add(new Option(4, "BUSCAR MAGIA", this::findById));
+        this.menuOptions.add(new Option(5, "LISTAR MAGIAS", this::listAll));
     }
 
     private Boolean create() {
@@ -29,6 +29,16 @@ public class MagicService extends MenuService {
             magicDAO.insert(newMagic);
         } catch (Exception err) {
             System.out.println("Erro ao criar nova magia!");
+        }
+        return true;
+    }
+
+    private Boolean update() {
+        try {
+            Magic updatedMagic = instantiateMagic();
+            magicDAO.update(updatedMagic);
+        } catch (Exception err) {
+            System.out.println("Erro ao atualizar magia!");
         }
         return true;
     }
@@ -43,13 +53,13 @@ public class MagicService extends MenuService {
         System.out.print("Digite o nome da magia: ");
         String name = scanner.nextLine();
 
-        System.out.print("Digite a descrição: ");
+        System.out.print("Digite a descricao: ");
         String description = scanner.nextLine();
 
         System.out.print("Custo de mana: ");
         Integer manaCost = scanner.nextInt();
 
-        System.out.print("Nível mínimo necessário: ");
+        System.out.print("Nivel minimo necessario: ");
         Integer minLevel = scanner.nextInt();
         scanner.nextLine();
 
@@ -77,8 +87,8 @@ public class MagicService extends MenuService {
             System.out.print("Id da magia: ");
             Integer magicId = scanner.nextInt();
             Magic magia = magicDAO.findById(magicId);
-            if(magia == null) {
-                System.out.println("NAO ACHOU NADA");
+            if (magia == null) {
+                System.out.println("Magia nao encontrada");
                 return false;
             }
             print(Collections.singletonList(magia));
@@ -106,18 +116,18 @@ public class MagicService extends MenuService {
         System.out.print("NIVEL MINIMO | ");
         System.out.print("DADOS | ");
         System.out.print("\n");
-        for(Magic magic : magicList) {
-            System.out.print(magic.getId()+pipe());
-            System.out.print(magic.getName()+pipe());
-            System.out.print(magic.getDescription()+pipe());
-            System.out.print(magic.getManaCost()+pipe());
-            System.out.print(magic.getMinLevel()+pipe());
-            System.out.print(magic.getDices()+pipe());
+        for (Magic magic : magicList) {
+            System.out.print(magic.getId() + pipe());
+            System.out.print(magic.getName() + pipe());
+            System.out.print(magic.getDescription() + pipe());
+            System.out.print(magic.getManaCost() + pipe());
+            System.out.print(magic.getMinLevel() + pipe());
+            System.out.print(magic.getDices() + pipe());
             System.out.print("\n");
         }
     }
 
-    private String pipe(){
+    private String pipe() {
         return " | ";
     }
 }
