@@ -1,25 +1,29 @@
 package model;
 
-public class Species {
-    private String id;
-    private String name;
-    private String description;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-    public Species(String id, String name, String description) {
+public class Species {
+    private Integer id;
+    private String name;
+
+    public Species(Integer id, String name) {
         this.id = id;
         this.name = name;
-        this.description = description;
     }
 
-    public String getId() {
+    public static Species fromResultSet(ResultSet result) throws SQLException {
+        return new Species(
+                result.getInt(1),
+                result.getString(2)
+        );
+    }
+
+    public Integer getId() {
         return id;
     }
 
     public String getName() {
         return name;
-    }
-
-    public String getDescription() {
-        return description;
     }
 }

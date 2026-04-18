@@ -12,15 +12,10 @@ public class MenuService {
     public String menuTitle;
     public List<Option> menuOptions;
 
-    public MenuService(String menuTitle, List<Option> menuOptions) {
-        this.menuTitle = menuTitle;
-        this.menuOptions = menuOptions;
-    }
-
     public MenuService() {
         this.menuTitle = "";
         this.menuOptions = new ArrayList<>();
-        menuOptions.add(new Option(0, "VOLTAR", () -> {return false;}));
+        menuOptions.add(new Option(0, "VOLTAR", () -> false));
     }
 
     public boolean execute() throws SQLException {
@@ -53,7 +48,7 @@ public class MenuService {
     }
 
 
-    private void processUserOption(int option) throws SQLException {
+    private void processUserOption(int option) {
         for(Option menuOption : menuOptions) {
             if(menuOption.getOptionNumber().equals(option)) {
                 menuOption.getFunction().get();

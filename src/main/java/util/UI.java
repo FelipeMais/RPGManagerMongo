@@ -2,7 +2,7 @@ package util;
 
 public class UI {
 
-    private static final int width = 50;
+    private static final int width = 100;
     private static final String separator = "=";
 
     public static void printLine(){
