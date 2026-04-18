@@ -7,6 +7,10 @@ public class Species {
     private Integer id;
     private String name;
 
+    public Species(String name) {
+        this(null, name);
+    }
+
     public Species(Integer id, String name) {
         this.id = id;
         this.name = name;

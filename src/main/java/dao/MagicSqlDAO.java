@@ -22,14 +22,13 @@ public class MagicSqlDAO implements MagicDAO {
     @Override
     public void insert(Magic newMagic) throws SQLException {
         PreparedStatement st = connection.prepareStatement(
-                "INSERT INTO magias(id_magia, nome_magia, descricao, custo_mana, nivel_minimo, dados) VALUES (?, ?, ?, ?, ?, ?)"
+                "INSERT INTO magias(nome_magia, descricao, custo_mana, nivel_minimo, dados) VALUES (?, ?, ?, ?, ?)"
         );
-        st.setInt(1, newMagic.getId());
-        st.setString(2, newMagic.getName());
-        st.setString(3, newMagic.getDescription());
-        st.setInt(4, newMagic.getManaCost());
-        st.setInt(5, newMagic.getMinLevel());
-        st.setString(6, newMagic.getDices());
+        st.setString(1, newMagic.getName());
+        st.setString(2, newMagic.getDescription());
+        st.setInt(3, newMagic.getManaCost());
+        st.setInt(4, newMagic.getMinLevel());
+        st.setString(5, newMagic.getDices());
         st.execute();
         st.close();
     }

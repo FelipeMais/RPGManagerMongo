@@ -22,10 +22,9 @@ public class SpeciesSqlDAO implements SpeciesDAO {
     @Override
     public void insert(Species newSpecies) throws SQLException {
         PreparedStatement st = connection.prepareStatement(
-                "INSERT INTO especie(id_especie, nome_especie) VALUES (?, ?)"
+                "INSERT INTO especie(nome_especie) VALUES (?)"
         );
-        st.setInt(1, newSpecies.getId());
-        st.setString(2, newSpecies.getName());
+        st.setString(1, newSpecies.getName());
         st.execute();
         st.close();
     }

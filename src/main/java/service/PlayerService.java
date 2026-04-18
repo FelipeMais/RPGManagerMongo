@@ -26,7 +26,7 @@ public class PlayerService extends MenuService {
 
     private Boolean create() {
         try {
-            Player newPlayer = instantiatePlayer();
+            Player newPlayer = instantiatePlayer(false);
             playerDAO.insert(newPlayer);
         } catch (Exception err) {
             System.out.println("Erro ao criar novo jogador!");
@@ -36,7 +36,7 @@ public class PlayerService extends MenuService {
 
     private Boolean update() {
         try {
-            Player updatedPlayer = instantiatePlayer();
+            Player updatedPlayer = instantiatePlayer(true);
             playerDAO.update(updatedPlayer);
         } catch (Exception err) {
             System.out.println("Erro ao atualizar jogador!");
@@ -44,12 +44,14 @@ public class PlayerService extends MenuService {
         return true;
     }
 
-    private Player instantiatePlayer() {
+    private Player instantiatePlayer(Boolean askId) {
         Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Digite o ID do jogador: ");
-        Integer id = scanner.nextInt();
-        scanner.nextLine();
+        Integer id = null;
+        if (askId) {
+            System.out.print("Digite o ID do jogador: ");
+            id = scanner.nextInt();
+            scanner.nextLine();
+        }
 
         System.out.print("Digite o nome do jogador: ");
         String name = scanner.nextLine();
@@ -60,7 +62,10 @@ public class PlayerService extends MenuService {
         System.out.print("Jogador ativo? (true/false): ");
         Boolean active = scanner.nextBoolean();
 
-        return new Player(id, name, Timestamp.valueOf(entryDate), active);
+        if (askId) {
+            return new Player(id, name, Timestamp.valueOf(entryDate), active);
+        }
+        return new Player(name, Timestamp.valueOf(entryDate), active);
     }
 
     private Boolean remove() {

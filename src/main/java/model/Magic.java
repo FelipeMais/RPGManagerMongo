@@ -11,6 +11,10 @@ public class Magic {
     private Integer minLevel;
     private String dices;
 
+    public Magic(String name, String description, Integer manaCost, Integer minLevel, String dices) {
+        this(null, name, description, manaCost, minLevel, dices);
+    }
+
     public Magic(Integer id, String name, String description, Integer manaCost, Integer minLevel, String dices) {
         this.id = id;
         this.name = name;

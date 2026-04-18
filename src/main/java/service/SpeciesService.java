@@ -25,7 +25,7 @@ public class SpeciesService extends MenuService {
 
     private Boolean create() {
         try {
-            Species newSpecies = instantiateSpecies();
+            Species newSpecies = instantiateSpecies(false);
             speciesDAO.insert(newSpecies);
         } catch (Exception err) {
             System.out.println("Erro ao criar nova especie!");
@@ -35,7 +35,7 @@ public class SpeciesService extends MenuService {
 
     private Boolean update() {
         try {
-            Species updatedSpecies = instantiateSpecies();
+            Species updatedSpecies = instantiateSpecies(true);
             speciesDAO.update(updatedSpecies);
         } catch (Exception err) {
             System.out.println("Erro ao atualizar especie!");
@@ -43,17 +43,22 @@ public class SpeciesService extends MenuService {
         return true;
     }
 
-    private Species instantiateSpecies() {
+    private Species instantiateSpecies(Boolean askId) {
         Scanner scanner = new Scanner(System.in);
-
-        System.out.print("Digite o ID da especie: ");
-        Integer id = scanner.nextInt();
-        scanner.nextLine();
+        Integer id = null;
+        if (askId) {
+            System.out.print("Digite o ID da especie: ");
+            id = scanner.nextInt();
+            scanner.nextLine();
+        }
 
         System.out.print("Digite o nome da especie: ");
         String name = scanner.nextLine();
 
-        return new Species(id, name);
+        if (askId) {
+            return new Species(id, name);
+        }
+        return new Species(name);
     }
 
     private Boolean remove() {
