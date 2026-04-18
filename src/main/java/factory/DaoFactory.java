@@ -3,8 +3,14 @@ package factory;
 import connection.ConnectionConfig;
 import connection.SqlConnection;
 import contracts.DataBaseConnection;
-import dao.MagicSqlDAO;
 import contracts.MagicDAO;
+import contracts.PlayerDAO;
+import contracts.RpgClassDAO;
+import contracts.SpeciesDAO;
+import dao.MagicSqlDAO;
+import dao.PlayerSqlDAO;
+import dao.RpgClassSqlDAO;
+import dao.SpeciesSqlDAO;
 
 import java.sql.Connection;
 
@@ -23,7 +29,7 @@ public class DaoFactory {
                 sharedConnection = dbManager.connect(config);
 
             } else {
-                // Lógica para NoSQL
+                // Logica para NoSQL
             }
         }
     }
@@ -34,16 +40,42 @@ public class DaoFactory {
         if ("SQL".equalsIgnoreCase(dbType)) {
             return new MagicSqlDAO((Connection) sharedConnection);
         }
-        return null; // caso do NOSQL
+        return null;
     }
 
-    // Metodo para fechar no final da execução
+    public static RpgClassDAO getRpgClassDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new RpgClassSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static PlayerDAO getPlayerDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new PlayerSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static SpeciesDAO getSpeciesDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new SpeciesSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
     public static void close() {
         if (dbManager != null) {
             dbManager.closeConnection();
             dbManager = null;
             sharedConnection = null;
-            System.out.println("Fábrica de DAOs encerrada.");
+            System.out.println("Fabrica de DAOs encerrada.");
         }
     }
 }
