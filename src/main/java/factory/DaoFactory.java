@@ -3,6 +3,8 @@ package factory;
 import connection.ConnectionConfig;
 import connection.SqlConnection;
 import contracts.DataBaseConnection;
+import contracts.ItemAttributeDAO;
+import contracts.ItemDAO;
 import contracts.LocationDAO;
 import contracts.LocationTypeDAO;
 import contracts.MagicDAO;
@@ -12,6 +14,8 @@ import contracts.AttributeDAO;
 import contracts.RpgClassDAO;
 import contracts.SpeciesDAO;
 import dao.AttributeSqlDAO;
+import dao.ItemAttributeSqlDAO;
+import dao.ItemSqlDAO;
 import dao.LocationSqlDAO;
 import dao.LocationTypeSqlDAO;
 import dao.MagicAttributeSqlDAO;
@@ -51,6 +55,15 @@ public class DaoFactory {
         return null;
     }
 
+    public static ItemDAO getItemDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new ItemSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
     public static RpgClassDAO getRpgClassDAO() {
         if (sharedConnection == null) init();
 
@@ -83,6 +96,15 @@ public class DaoFactory {
 
         if ("SQL".equalsIgnoreCase(dbType)) {
             return new MagicAttributeSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static ItemAttributeDAO getItemAttributeDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new ItemAttributeSqlDAO((Connection) sharedConnection);
         }
         return null;
     }
