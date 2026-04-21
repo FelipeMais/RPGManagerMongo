@@ -1,22 +1,27 @@
 package model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class CharacterSheet {
     private Integer id;
     private Integer classId;
     private Integer speciesId;
-
     private Integer maxHitPoints;
     private Integer maxManaPoints;
-
     private Integer strength;
     private Integer dexterity;
     private Integer constitution;
     private Integer intelligence;
-    private Integer charisma;
     private Integer wisdom;
+    private Integer charisma;
     private Integer level;
 
-    public CharacterSheet(Integer id, Integer classId, Integer speciesId, Integer maxHitPoints, Integer maxManaPoints, Integer strength, Integer dexterity, Integer constitution, Integer intelligence, Integer charisma, Integer wisdom, Integer level) {
+    public CharacterSheet(Integer classId, Integer speciesId, Integer maxHitPoints, Integer maxManaPoints, Integer strength, Integer dexterity, Integer constitution, Integer intelligence, Integer wisdom, Integer charisma, Integer level) {
+        this(null, classId, speciesId, maxHitPoints, maxManaPoints, strength, dexterity, constitution, intelligence, wisdom, charisma, level);
+    }
+
+    public CharacterSheet(Integer id, Integer classId, Integer speciesId, Integer maxHitPoints, Integer maxManaPoints, Integer strength, Integer dexterity, Integer constitution, Integer intelligence, Integer wisdom, Integer charisma, Integer level) {
         this.id = id;
         this.classId = classId;
         this.speciesId = speciesId;
@@ -26,9 +31,36 @@ public class CharacterSheet {
         this.dexterity = dexterity;
         this.constitution = constitution;
         this.intelligence = intelligence;
-        this.charisma = charisma;
         this.wisdom = wisdom;
+        this.charisma = charisma;
         this.level = level;
+    }
+
+    public static CharacterSheet fromResultSet(ResultSet result) throws SQLException {
+        Integer classId = result.getInt(2);
+        if (result.wasNull()) {
+            classId = null;
+        }
+
+        Integer speciesId = result.getInt(3);
+        if (result.wasNull()) {
+            speciesId = null;
+        }
+
+        return new CharacterSheet(
+                result.getInt(1),
+                classId,
+                speciesId,
+                result.getInt(4),
+                result.getInt(5),
+                result.getInt(6),
+                result.getInt(7),
+                result.getInt(8),
+                result.getInt(9),
+                result.getInt(10),
+                result.getInt(11),
+                result.getInt(12)
+        );
     }
 
     public Integer getId() {
@@ -67,12 +99,12 @@ public class CharacterSheet {
         return intelligence;
     }
 
-    public Integer getCharisma() {
-        return charisma;
-    }
-
     public Integer getWisdom() {
         return wisdom;
+    }
+
+    public Integer getCharisma() {
+        return charisma;
     }
 
     public Integer getLevel() {

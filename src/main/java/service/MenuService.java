@@ -4,17 +4,15 @@ import util.Option;
 import util.UI;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class MenuService {
     public String menuTitle;
-    public List<Option> menuOptions;
+    public Set<Option> menuOptions;
 
     public MenuService() {
         this.menuTitle = "";
-        this.menuOptions = new ArrayList<>();
+        this.menuOptions = new TreeSet<>();
         menuOptions.add(new Option(0, "VOLTAR", () -> false));
     }
 
