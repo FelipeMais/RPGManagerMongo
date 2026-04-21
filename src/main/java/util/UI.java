@@ -47,7 +47,7 @@ public class UI {
 
         printTableSeparator(widths);
         Scanner sc = new Scanner(System.in);
-        System.out.println("Digite qualquer coisa para continuar:");
+        System.out.print("Digite qualquer coisa para continuar:");
         sc.nextLine();
     }
 

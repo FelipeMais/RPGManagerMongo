@@ -1,6 +1,5 @@
 package contracts;
 
-import model.Attribute;
 import model.Character;
 
 import java.sql.SQLException;

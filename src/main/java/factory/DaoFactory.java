@@ -126,6 +126,15 @@ public class DaoFactory {
         return null;
     }
 
+    public static CharacterSheetDAO getCharacterSheetDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new CharacterSheetSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
     public static void close() {
         if (dbManager != null) {
             dbManager.closeConnection();
