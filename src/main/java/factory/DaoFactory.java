@@ -63,6 +63,15 @@ public class DaoFactory {
         return null;
     }
 
+    public static AbilityDAO getAbilityDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new AbilitySqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
     public static MagicAttributeDAO getMagicAttributeDAO() {
         if (sharedConnection == null) init();
 
