@@ -12,7 +12,6 @@ public class MainMenuService extends MenuService {
     private final AttributeService attributeService;
     private final RpgClassService rpgClassService;
     private final SpeciesService speciesService;
-    private final ItemService itemService;
 
     public MainMenuService() throws SQLException {
         this.itemService = new ItemService();
@@ -22,7 +21,6 @@ public class MainMenuService extends MenuService {
         this.attributeService = new AttributeService();
         this.rpgClassService = new RpgClassService();
         this.speciesService = new SpeciesService();
-        this.itemService = new ItemService();
         this.menuTitle = "MENU PRINCIPAL";
         this.menuOptions.add(new Option(1, "GERENCIAR MAGIAS", this::executarGerenciamentoMagias));
         this.menuOptions.add(new Option(2, "GERENCIAR ITENS", this::executarGerenciamentoItens));
@@ -94,15 +92,5 @@ public class MainMenuService extends MenuService {
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao gerenciar atributos", e);
         }
-    }
-
-    private Boolean executarGerenciamentoItens() {
-        try {
-            while (itemService.execute()) { }
-            return true;
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao gerenciar itens", e);
-        }
-
     }
 }

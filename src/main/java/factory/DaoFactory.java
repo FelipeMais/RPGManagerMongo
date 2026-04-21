@@ -55,15 +55,6 @@ public class DaoFactory {
         return null;
     }
 
-    public static ItemDAO getItemDAO() {
-        if (sharedConnection == null) init();
-
-        if ("SQL".equalsIgnoreCase(dbType)) {
-            return new ItemSqlDAO((Connection) sharedConnection);
-        }
-        return null;
-    }
-
     public static RpgClassDAO getRpgClassDAO() {
         if (sharedConnection == null) init();
 
@@ -141,15 +132,6 @@ public class DaoFactory {
 
         if ("SQL".equalsIgnoreCase(dbType)){
             return new ItemSqlDAO((Connection) sharedConnection);
-        }
-        return null;
-    }
-
-    public static ItemAttributeDAO getItemAttributeDAO() {
-        if (sharedConnection == null) init();;
-
-        if ("SQL".equalsIgnoreCase(dbType)){
-            return new ItemAttributeSqlDAO((Connection) sharedConnection);
         }
         return null;
     }
