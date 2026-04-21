@@ -4,8 +4,10 @@ import contracts.SpeciesDAO;
 import factory.DaoFactory;
 import model.Species;
 import util.Option;
+import util.UI;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -101,17 +103,17 @@ public class SpeciesService extends MenuService {
     }
 
     private void print(List<Species> speciesList) {
-        System.out.print("ID | ");
-        System.out.print("NOME | ");
-        System.out.print("\n");
-        for (Species species : speciesList) {
-            System.out.print(species.getId() + pipe());
-            System.out.print(species.getName() + pipe());
-            System.out.print("\n");
-        }
-    }
+        String[] headers = {"ID", "NOME"};
+        int[] widths = {4, 30};
+        List<String[]> rows = new ArrayList<>();
 
-    private String pipe() {
-        return " | ";
+        for (Species species : speciesList) {
+            rows.add(new String[]{
+                    String.valueOf(species.getId()),
+                    species.getName()
+            });
+        }
+
+        UI.printTable(headers, widths, rows);
     }
 }

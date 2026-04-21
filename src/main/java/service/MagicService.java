@@ -7,6 +7,7 @@ import model.Attribute;
 import model.Magic;
 import model.relationship.MagicAttribute;
 import util.Option;
+import util.UI;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -172,24 +173,23 @@ public class MagicService extends MenuService {
     }
 
     private void print(List<Magic> magicList) {
-        System.out.print("ID | ");
-        System.out.print("NOME | ");
-        System.out.print("DESCRICAO | ");
-        System.out.print("CUSTO DE MANA | ");
-        System.out.print("NIVEL MINIMO | ");
-        System.out.print("DADOS | ");
-        System.out.print("ATRIBUTOS | ");
-        System.out.print("\n");
+        String[] headers = {"ID", "NOME", "MANA", "NIVEL", "DADOS", "ATRIBUTOS", "DESCRICAO"};
+        int[] widths = {4, 18, 4, 5, 8, 50, 50};
+        List<String[]> rows = new ArrayList<>();
+
         for (Magic magic : magicList) {
-            System.out.print(magic.getId() + pipe());
-            System.out.print(magic.getName() + pipe());
-            System.out.print(magic.getDescription() + pipe());
-            System.out.print(magic.getManaCost() + pipe());
-            System.out.print(magic.getMinLevel() + pipe());
-            System.out.print(magic.getDices() + pipe());
-            System.out.print(formatAttributes(magic.getAttributes()) + pipe());
-            System.out.print("\n");
+            rows.add(new String[]{
+                    String.valueOf(magic.getId()),
+                    magic.getName(),
+                    String.valueOf(magic.getManaCost()),
+                    String.valueOf(magic.getMinLevel()),
+                    magic.getDices(),
+                    formatAttributes(magic.getAttributes()),
+                    magic.getDescription()
+            });
         }
+
+        UI.printTable(headers, widths, rows);
     }
 
     private String formatAttributes(List<MagicAttribute> attributes) {
@@ -205,9 +205,5 @@ public class MagicService extends MenuService {
             values.add(attributeName + "(" + attribute.getValue() + ")");
         }
         return String.join(", ", values);
-    }
-
-    private String pipe() {
-        return " | ";
     }
 }

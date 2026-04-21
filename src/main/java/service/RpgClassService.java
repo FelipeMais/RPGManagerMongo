@@ -4,8 +4,10 @@ import contracts.RpgClassDAO;
 import factory.DaoFactory;
 import model.RpgClass;
 import util.Option;
+import util.UI;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -104,19 +106,18 @@ public class RpgClassService extends MenuService {
     }
 
     private void print(List<RpgClass> rpgClasses) {
-        System.out.print("ID | ");
-        System.out.print("NOME | ");
-        System.out.print("DESCRICAO | ");
-        System.out.print("\n");
-        for (RpgClass rpgClass : rpgClasses) {
-            System.out.print(rpgClass.getIdClass() + pipe());
-            System.out.print(rpgClass.getClassName() + pipe());
-            System.out.print(rpgClass.getDescription() + pipe());
-            System.out.print("\n");
-        }
-    }
+        String[] headers = {"ID", "NOME", "DESCRICAO"};
+        int[] widths = {4, 24, 40};
+        List<String[]> rows = new ArrayList<>();
 
-    private String pipe() {
-        return " | ";
+        for (RpgClass rpgClass : rpgClasses) {
+            rows.add(new String[]{
+                    String.valueOf(rpgClass.getIdClass()),
+                    rpgClass.getClassName(),
+                    rpgClass.getDescription()
+            });
+        }
+
+        UI.printTable(headers, widths, rows);
     }
 }

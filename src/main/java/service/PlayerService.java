@@ -4,9 +4,11 @@ import contracts.PlayerDAO;
 import factory.DaoFactory;
 import model.Player;
 import util.Option;
+import util.UI;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -108,21 +110,19 @@ public class PlayerService extends MenuService {
     }
 
     private void print(List<Player> players) {
-        System.out.print("ID | ");
-        System.out.print("NOME | ");
-        System.out.print("DATA ENTRADA | ");
-        System.out.print("ATIVO | ");
-        System.out.print("\n");
-        for (Player player : players) {
-            System.out.print(player.getId() + pipe());
-            System.out.print(player.getName() + pipe());
-            System.out.print(player.getEntryDate() + pipe());
-            System.out.print(player.getActive() + pipe());
-            System.out.print("\n");
-        }
-    }
+        String[] headers = {"ID", "NOME", "ENTRADA", "ATIVO"};
+        int[] widths = {4, 24, 30, 5};
+        List<String[]> rows = new ArrayList<>();
 
-    private String pipe() {
-        return " | ";
+        for (Player player : players) {
+            rows.add(new String[]{
+                    String.valueOf(player.getId()),
+                    player.getName(),
+                    String.valueOf(player.getEntryDate()),
+                    String.valueOf(player.getActive())
+            });
+        }
+
+        UI.printTable(headers, widths, rows);
     }
 }

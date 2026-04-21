@@ -4,8 +4,10 @@ import contracts.LocationDAO;
 import factory.DaoFactory;
 import model.Location;
 import util.Option;
+import util.UI;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -124,20 +126,21 @@ public class LocationService extends MenuService {
     }
 
     private void print(List<Location> locations) {
-        System.out.print("ID | ");
-        System.out.print("LOCAL PAI | ");
-        System.out.print("TIPO LOCAL | ");
-        System.out.print("NOME | ");
-        System.out.print("DESCRICAO | ");
-        System.out.print("\n");
+        String[] headers = {"ID", "LOCAL PAI", "TIPO", "NOME", "DESCRICAO"};
+        int[] widths = {4, 9, 6, 20, 70};
+        List<String[]> rows = new ArrayList<>();
+
         for (Location location : locations) {
-            System.out.print(location.getId() + pipe());
-            System.out.print(printableNullable(location.getParentId()) + pipe());
-            System.out.print(printableNullable(location.getLocationTypeId()) + pipe());
-            System.out.print(location.getName() + pipe());
-            System.out.print(location.getDescription() + pipe());
-            System.out.print("\n");
+            rows.add(new String[]{
+                    String.valueOf(location.getId()),
+                    printableNullable(location.getParentId()),
+                    printableNullable(location.getLocationTypeId()),
+                    location.getName(),
+                    location.getDescription()
+            });
         }
+
+        UI.printTable(headers, widths, rows);
     }
 
     private Integer normalizeNullableId(Integer value) {
@@ -154,7 +157,4 @@ public class LocationService extends MenuService {
         return value.toString();
     }
 
-    private String pipe() {
-        return " | ";
-    }
 }
