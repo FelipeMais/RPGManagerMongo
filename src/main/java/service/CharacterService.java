@@ -7,9 +7,11 @@ import contracts.PlayerDAO;
 import contracts.RpgClassDAO;
 import contracts.SpeciesDAO;
 import factory.DaoFactory;
+import model.Ability;
 import model.Character;
 import model.CharacterSheet;
 import model.Location;
+import model.Magic;
 import model.Player;
 import model.RpgClass;
 import model.Species;
@@ -183,8 +185,8 @@ public class CharacterService extends MenuService {
     }
 
     private void print(List<Character> characterList) {
-        String[] headers = {"ID", "NOME", "JOGADOR", "LOCAL", "CLASSE", "ESPECIE", "NIVEL", "PV", "PM", "PV MAX", "PM MAX", "FOR", "DES", "CON", "INT", "SAB", "CAR", "HISTORIA"};
-        int[] widths = {4, 18, 16, 16, 14, 14, 5, 4, 4, 6, 6, 3, 3, 3, 3, 3, 3, 20};
+        String[] headers = {"ID", "NOME", "JOGADOR", "LOCAL", "CLASSE", "ESPECIE", "NIVEL", "PV", "PM", "PV MAX", "PM MAX", "FOR", "DES", "CON", "INT", "SAB", "CAR", "MAGIAS", "HABILIDADES", "HISTORIA"};
+        int[] widths = {4, 18, 16, 16, 14, 14, 5, 4, 4, 6, 6, 3, 3, 3, 3, 3, 3, 30, 30, 18};
         List<String[]> rows = new ArrayList<>();
 
         try {
@@ -215,6 +217,8 @@ public class CharacterService extends MenuService {
                         resolveAttribute(characterSheet, "INT"),
                         resolveAttribute(characterSheet, "SAB"),
                         resolveAttribute(characterSheet, "CAR"),
+                        formatKnownMagics(characterSheet),
+                        formatKnownAbilities(characterSheet),
                         character.getHistory()
                 });
             }
@@ -348,6 +352,30 @@ public class CharacterService extends MenuService {
             case "CAR" -> String.valueOf(characterSheet.getCharisma());
             default -> "-";
         };
+    }
+
+    private String formatKnownMagics(CharacterSheet characterSheet) {
+        if (characterSheet == null || characterSheet.getKnownMagics() == null || characterSheet.getKnownMagics().isEmpty()) {
+            return "-";
+        }
+
+        List<String> magicNames = new ArrayList<>();
+        for (Magic magic : characterSheet.getKnownMagics()) {
+            magicNames.add(magic.getName());
+        }
+        return String.join(", ", magicNames);
+    }
+
+    private String formatKnownAbilities(CharacterSheet characterSheet) {
+        if (characterSheet == null || characterSheet.getKnownAbilities() == null || characterSheet.getKnownAbilities().isEmpty()) {
+            return "-";
+        }
+
+        List<String> abilityNames = new ArrayList<>();
+        for (Ability ability : characterSheet.getKnownAbilities()) {
+            abilityNames.add(ability.getName());
+        }
+        return String.join(", ", abilityNames);
     }
 
     private Integer normalizeNullableId(Integer value) {
