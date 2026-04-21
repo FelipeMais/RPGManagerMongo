@@ -4,8 +4,10 @@ import contracts.AttributeDAO;
 import factory.DaoFactory;
 import model.Attribute;
 import util.Option;
+import util.UI;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -106,17 +108,17 @@ public class AttributeService extends MenuService {
     }
 
     private void print(List<Attribute> attributes) {
-        System.out.print("ID | ");
-        System.out.print("NOME | ");
-        System.out.print("\n");
-        for (Attribute attribute : attributes) {
-            System.out.print(attribute.getId() + pipe());
-            System.out.print(attribute.getName() + pipe());
-            System.out.print("\n");
-        }
-    }
+        String[] headers = {"ID", "NOME"};
+        int[] widths = {4, 30};
+        List<String[]> rows = new ArrayList<>();
 
-    private String pipe() {
-        return " | ";
+        for (Attribute attribute : attributes) {
+            rows.add(new String[]{
+                    String.valueOf(attribute.getId()),
+                    attribute.getName()
+            });
+        }
+
+        UI.printTable(headers, widths, rows);
     }
 }

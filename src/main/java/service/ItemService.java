@@ -7,6 +7,7 @@ import model.Attribute;
 import model.Item;
 import model.relationship.ItemAttribute;
 import util.Option;
+import util.UI;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -19,7 +20,7 @@ public class ItemService extends MenuService {
     private final AttributeDAO attributeDAO;
     private final ItemDAO itemDAO;
 
-    public ItemService() throws SQLException{
+    public ItemService() throws SQLException {
         this.attributeDAO = DaoFactory.getAttributeDAO();
         this.itemDAO = DaoFactory.getItemDAO();
         this.menuTitle = "GERENCIAR ITENS";
@@ -28,11 +29,10 @@ public class ItemService extends MenuService {
         this.menuOptions.add(new Option(3, "REMOVER ITEM", this::remove));
         this.menuOptions.add(new Option(4, "BUSCAR ITEM", this::findById));
         this.menuOptions.add(new Option(5, "LISTAR ITENS", this::listAll));
-
     }
 
     private Boolean create() {
-        try{
+        try {
             Item newItem = instantiateItem(false);
             itemDAO.insert(newItem);
         } catch (Exception err) {
@@ -42,10 +42,10 @@ public class ItemService extends MenuService {
     }
 
     private Boolean update() {
-        try{
+        try {
             Item updatedItem = instantiateItem(true);
             itemDAO.insert(updatedItem);
-        } catch (Exception err){
+        } catch (Exception err) {
             System.out.println("Erro ao atualizar item!");
         }
         return true;
@@ -70,7 +70,7 @@ public class ItemService extends MenuService {
         System.out.print("Digite o peso do item: ");
         BigDecimal weight = scanner.nextBigDecimal();
 
-        System.out.print("Digite o valor monetário do item: ");
+        System.out.print("Digite o valor monetario do item: ");
         BigDecimal monetaryValue = scanner.nextBigDecimal();
 
         List<ItemAttribute> attributes = getAttributes();
@@ -80,7 +80,7 @@ public class ItemService extends MenuService {
         return new Item(name, description, weight, monetaryValue, attributes);
     }
 
-    private List<ItemAttribute> getAttributes() throws SQLException{
+    private List<ItemAttribute> getAttributes() throws SQLException {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Deseja adicionar atributos ao item? [S]/[N]: ");
         String addAttributes = scanner.nextLine();
@@ -123,7 +123,7 @@ public class ItemService extends MenuService {
     }
 
     private boolean containsAttribute(List<ItemAttribute> attributes, Integer attributeId) {
-        for (ItemAttribute attribute : attributes){
+        for (ItemAttribute attribute : attributes) {
             if (attribute.getAttributeId().equals(attributeId)) {
                 return true;
             }
@@ -132,7 +132,7 @@ public class ItemService extends MenuService {
     }
 
     private Boolean remove() {
-        try{
+        try {
             Scanner scanner = new Scanner(System.in);
             System.out.print("Id do item: ");
             Integer itemId = scanner.nextInt();
@@ -171,22 +171,22 @@ public class ItemService extends MenuService {
     }
 
     private void print(List<Item> itemList) {
-        System.out.print("ID | ");
-        System.out.print("NOME | ");
-        System.out.print("DESCRICAO | ");
-        System.out.print("PESO | ");
-        System.out.print("VALOR MONETÁRIO | ");
-        System.out.print("ATRIBUTOS | ");
-        System.out.print("\n");
+        String[] headers = {"ID", "NOME", "PESO", "VALOR", "ATRIBUTOS", "DESCRICAO"};
+        int[] widths = {4, 18, 8, 10, 50, 50};
+        List<String[]> rows = new ArrayList<>();
+
         for (Item item : itemList) {
-            System.out.print(item.getId() + pipe());
-            System.out.print(item.getName() + pipe());
-            System.out.print(item.getDescription() + pipe());
-            System.out.print(item.getWeight() + pipe());
-            System.out.print(item.getMonetaryValue() + pipe());
-            System.out.print(formatAttributes(item.getAttributes()) + pipe());
-            System.out.print("\n");
+            rows.add(new String[]{
+                    String.valueOf(item.getId()),
+                    item.getName(),
+                    String.valueOf(item.getWeight()),
+                    String.valueOf(item.getMonetaryValue()),
+                    formatAttributes(item.getAttributes()),
+                    item.getDescription()
+            });
         }
+
+        UI.printTable(headers, widths, rows);
     }
 
     private String formatAttributes(List<ItemAttribute> attributes) {
@@ -202,9 +202,5 @@ public class ItemService extends MenuService {
             values.add(attributeName + "(" + attribute.getValue() + ")");
         }
         return String.join(", ", values);
-    }
-
-    private String pipe() {
-        return " | ";
     }
 }

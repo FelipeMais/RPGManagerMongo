@@ -4,8 +4,10 @@ import contracts.LocationTypeDAO;
 import factory.DaoFactory;
 import model.LocationType;
 import util.Option;
+import util.UI;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -104,19 +106,18 @@ public class LocationTypeService extends MenuService {
     }
 
     private void print(List<LocationType> locationTypes) {
-        System.out.print("ID | ");
-        System.out.print("NOME | ");
-        System.out.print("DESCRICAO | ");
-        System.out.print("\n");
-        for (LocationType locationType : locationTypes) {
-            System.out.print(locationType.getId() + pipe());
-            System.out.print(locationType.getName() + pipe());
-            System.out.print(locationType.getDescription() + pipe());
-            System.out.print("\n");
-        }
-    }
+        String[] headers = {"ID", "NOME", "DESCRICAO"};
+        int[] widths = {4, 24, 70};
+        List<String[]> rows = new ArrayList<>();
 
-    private String pipe() {
-        return " | ";
+        for (LocationType locationType : locationTypes) {
+            rows.add(new String[]{
+                    String.valueOf(locationType.getId()),
+                    locationType.getName(),
+                    locationType.getDescription()
+            });
+        }
+
+        UI.printTable(headers, widths, rows);
     }
 }
