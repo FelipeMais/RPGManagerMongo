@@ -1,7 +1,11 @@
 package model;
 
+import model.relationship.InventoryItem;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Character {
 
@@ -13,12 +17,21 @@ public class Character {
     private Integer hitPoints;
     private Integer manaPoints;
     private String history;
+    private List<InventoryItem> inventory;
 
     public Character(Integer playerId, Integer sheetId, Integer currentLocationId, String name, Integer hitPoints, Integer manaPoints, String history) {
-        this(null, playerId, sheetId, currentLocationId, name, hitPoints, manaPoints, history);
+        this(null, playerId, sheetId, currentLocationId, name, hitPoints, manaPoints, history, new ArrayList<>());
+    }
+
+    public Character(Integer playerId, Integer sheetId, Integer currentLocationId, String name, Integer hitPoints, Integer manaPoints, String history, List<InventoryItem> inventory) {
+        this(null, playerId, sheetId, currentLocationId, name, hitPoints, manaPoints, history, inventory);
     }
 
     public Character(Integer id, Integer playerId, Integer sheetId, Integer currentLocationId, String name, Integer hitPoints, Integer manaPoints, String history) {
+        this(id, playerId, sheetId, currentLocationId, name, hitPoints, manaPoints, history, new ArrayList<>());
+    }
+
+    public Character(Integer id, Integer playerId, Integer sheetId, Integer currentLocationId, String name, Integer hitPoints, Integer manaPoints, String history, List<InventoryItem> inventory) {
         this.id = id;
         this.playerId = playerId;
         this.sheetId = sheetId;
@@ -27,6 +40,7 @@ public class Character {
         this.hitPoints = hitPoints;
         this.manaPoints = manaPoints;
         this.history = history;
+        this.inventory = inventory;
     }
 
     public static Character fromResultSet(ResultSet result) throws SQLException {
@@ -53,7 +67,8 @@ public class Character {
                 result.getString(5),
                 result.getInt(6),
                 result.getInt(7),
-                result.getString(8)
+                result.getString(8),
+                new ArrayList<>()
         );
     }
 
@@ -87,5 +102,13 @@ public class Character {
 
     public String getHistory() {
         return history;
+    }
+
+    public List<InventoryItem> getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(List<InventoryItem> inventory) {
+        this.inventory = inventory;
     }
 }

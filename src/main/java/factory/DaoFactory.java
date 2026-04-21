@@ -126,6 +126,15 @@ public class DaoFactory {
         return null;
     }
 
+    public static InventoryDAO getInventoryDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new InventorySqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
     public static CharacterDAO getCharacterDAO() {
         if (sharedConnection == null) init();;
 
