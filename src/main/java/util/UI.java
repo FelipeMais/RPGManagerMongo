@@ -46,9 +46,6 @@ public class UI {
         }
 
         printTableSeparator(widths);
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Digite qualquer coisa para continuar:");
-        sc.nextLine();
     }
 
     private static String insertTextInLine(String text, String lineCharacter, int lineSize) {
@@ -118,5 +115,11 @@ public class UI {
         return value
                 .replace("\r", " ")
                 .replace("\n", " ");
+    }
+
+    public static void enterAnythingToContinue() {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Digite qualquer coisa para continuar:");
+        sc.nextLine();
     }
 }

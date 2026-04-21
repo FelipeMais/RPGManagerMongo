@@ -79,22 +79,16 @@ public class CharacterService extends MenuService {
             scanner.nextLine();
         }
 
-        System.out.print("Digite o ID do jogador (0 para nenhum): ");
-        Integer playerId = normalizeNullableId(scanner.nextInt());
-        scanner.nextLine();
+        Integer playerId = readExistingPlayerId(scanner);
 
         Integer sheetId;
         if (askId) {
-            System.out.print("Digite o ID da ficha (0 para nenhuma): ");
-            sheetId = normalizeNullableId(scanner.nextInt());
-            scanner.nextLine();
+            sheetId = readExistingSheetId(scanner);
         } else {
             sheetId = resolveSheetIdForCreation(scanner);
         }
 
-        System.out.print("Digite o ID do local atual (0 para nenhum): ");
-        Integer currentLocationId = normalizeNullableId(scanner.nextInt());
-        scanner.nextLine();
+        Integer currentLocationId = readExistingLocationId(scanner);
 
         System.out.print("Digite o nome do personagem: ");
         String name = scanner.nextLine();
@@ -124,19 +118,10 @@ public class CharacterService extends MenuService {
             scanner.nextLine();
 
             if (option == 1) {
-                System.out.print("Digite o ID da ficha existente: ");
-                Integer sheetId = normalizeNullableId(scanner.nextInt());
-                scanner.nextLine();
-                if (sheetId == null) {
-                    System.out.println("Informe um ID de ficha valido.");
-                    continue;
+                Integer sheetId = readExistingSheetIdRequired(scanner);
+                if (sheetId != null) {
+                    return sheetId;
                 }
-
-                if (characterSheetService.findCharacterSheetById(sheetId) == null) {
-                    System.out.println("Ficha nao encontrada. Escolha outra opcao ou informe outro ID.");
-                    continue;
-                }
-                return sheetId;
             }
 
             if (option == 2) {
@@ -170,6 +155,7 @@ public class CharacterService extends MenuService {
                 return false;
             }
             print(Collections.singletonList(character));
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar personagem!");
         }
@@ -180,6 +166,7 @@ public class CharacterService extends MenuService {
         try {
             List<Character> characterList = characterDAO.listAll();
             print(characterList);
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar personagens!");
         }
@@ -382,5 +369,139 @@ public class CharacterService extends MenuService {
             return "-";
         }
         return value.toString();
+    }
+
+    private Integer readExistingPlayerId(Scanner scanner) {
+        while (true) {
+            try {
+                showAvailablePlayers();
+                System.out.print("Digite o ID do jogador (0 para nenhum): ");
+                Integer playerId = normalizeNullableId(scanner.nextInt());
+                scanner.nextLine();
+
+                if (playerId == null) {
+                    return null;
+                }
+
+                if (playerDAO.findById(playerId) != null) {
+                    return playerId;
+                }
+
+                System.out.println("Jogador informado nao existe.");
+            } catch (SQLException err) {
+                throw new RuntimeException("Erro ao listar jogadores.", err);
+            }
+        }
+    }
+
+    private Integer readExistingSheetId(Scanner scanner) {
+        while (true) {
+            try {
+                showAvailableSheets();
+                System.out.print("Digite o ID da ficha (0 para nenhuma): ");
+                Integer sheetId = normalizeNullableId(scanner.nextInt());
+                scanner.nextLine();
+
+                if (sheetId == null) {
+                    return null;
+                }
+
+                if (characterSheetDAO.findById(sheetId) != null) {
+                    return sheetId;
+                }
+
+                System.out.println("Ficha informada nao existe.");
+            } catch (SQLException err) {
+                throw new RuntimeException("Erro ao listar fichas.", err);
+            }
+        }
+    }
+
+    private Integer readExistingSheetIdRequired(Scanner scanner) {
+        while (true) {
+            try {
+                showAvailableSheets();
+                System.out.print("Digite o ID da ficha existente: ");
+                Integer sheetId = normalizeNullableId(scanner.nextInt());
+                scanner.nextLine();
+
+                if (sheetId == null) {
+                    System.out.println("Informe um ID de ficha valido.");
+                    continue;
+                }
+
+                if (characterSheetDAO.findById(sheetId) != null) {
+                    return sheetId;
+                }
+
+                System.out.println("Ficha informada nao existe.");
+            } catch (SQLException err) {
+                throw new RuntimeException("Erro ao listar fichas.", err);
+            }
+        }
+    }
+
+    private Integer readExistingLocationId(Scanner scanner) {
+        while (true) {
+            try {
+                showAvailableLocations();
+                System.out.print("Digite o ID do local atual (0 para nenhum): ");
+                Integer locationId = normalizeNullableId(scanner.nextInt());
+                scanner.nextLine();
+
+                if (locationId == null) {
+                    return null;
+                }
+
+                if (locationDAO.findById(locationId) != null) {
+                    return locationId;
+                }
+
+                System.out.println("Local informado nao existe.");
+            } catch (SQLException err) {
+                throw new RuntimeException("Erro ao listar locais.", err);
+            }
+        }
+    }
+
+    private void showAvailablePlayers() throws SQLException {
+        String[] headers = {"ID", "NOME"};
+        int[] widths = {4, 24};
+        List<String[]> rows = new ArrayList<>();
+
+        for (Player player : playerDAO.listAll()) {
+            rows.add(new String[]{String.valueOf(player.getId()), player.getName()});
+        }
+
+        UI.printTable(headers, widths, rows);
+    }
+
+    private void showAvailableLocations() throws SQLException {
+        String[] headers = {"ID", "NOME"};
+        int[] widths = {4, 24};
+        List<String[]> rows = new ArrayList<>();
+
+        for (Location location : locationDAO.listAll()) {
+            rows.add(new String[]{String.valueOf(location.getId()), location.getName()});
+        }
+
+        UI.printTable(headers, widths, rows);
+    }
+
+    private void showAvailableSheets() throws SQLException {
+        String[] headers = {"ID", "CLASSE", "ESPECIE", "NIVEL"};
+        int[] widths = {4, 8, 8, 5};
+        List<String[]> rows = new ArrayList<>();
+
+        for (CharacterSheet sheet : characterSheetDAO.listAll()) {
+            rows.add(new String[]{
+                    String.valueOf(sheet.getId()),
+                    printableNullable(sheet.getClassId()),
+                    printableNullable(sheet.getSpeciesId()),
+                    String.valueOf(sheet.getLevel())
+            });
+        }
+
+        UI.printTable(headers, widths, rows);
     }
 }

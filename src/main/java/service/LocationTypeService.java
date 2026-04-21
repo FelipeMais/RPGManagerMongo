@@ -89,6 +89,7 @@ public class LocationTypeService extends MenuService {
                 return true;
             }
             print(Collections.singletonList(locationType));
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar tipo de local!");
         }
@@ -99,6 +100,7 @@ public class LocationTypeService extends MenuService {
         try {
             List<LocationType> locationTypes = locationTypeDAO.listAll();
             print(locationTypes);
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar tipos de local!");
         }

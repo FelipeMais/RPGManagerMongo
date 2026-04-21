@@ -1,8 +1,10 @@
 package service;
 
 import contracts.LocationDAO;
+import contracts.LocationTypeDAO;
 import factory.DaoFactory;
 import model.Location;
+import model.LocationType;
 import util.Option;
 import util.UI;
 
@@ -14,10 +16,12 @@ import java.util.Scanner;
 
 public class LocationService extends MenuService {
     private final LocationDAO locationDAO;
+    private final LocationTypeDAO locationTypeDAO;
     private final LocationTypeService locationTypeService;
 
     public LocationService() throws SQLException {
         this.locationDAO = DaoFactory.getLocationDAO();
+        this.locationTypeDAO = DaoFactory.getLocationTypeDAO();
         this.locationTypeService = new LocationTypeService();
         this.menuTitle = "GERENCIAR LOCAIS";
         this.menuOptions.add(new Option(1, "INCLUIR LOCAL", this::create));
@@ -57,13 +61,8 @@ public class LocationService extends MenuService {
             scanner.nextLine();
         }
 
-        System.out.print("Digite o ID do local pai (0 para nenhum): ");
-        Integer parentId = normalizeNullableId(scanner.nextInt());
-        scanner.nextLine();
-
-        System.out.print("Digite o ID do tipo de local (0 para nenhum): ");
-        Integer locationTypeId = normalizeNullableId(scanner.nextInt());
-        scanner.nextLine();
+        Integer parentId = readExistingParentLocationId(scanner);
+        Integer locationTypeId = readExistingLocationTypeId(scanner);
 
         System.out.print("Digite o nome do local: ");
         String name = scanner.nextLine();
@@ -100,6 +99,7 @@ public class LocationService extends MenuService {
                 return true;
             }
             print(Collections.singletonList(location));
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar local!");
         }
@@ -110,6 +110,7 @@ public class LocationService extends MenuService {
         try {
             List<Location> locations = locationDAO.listAll();
             print(locations);
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar locais!");
         }
@@ -155,6 +156,76 @@ public class LocationService extends MenuService {
             return "-";
         }
         return value.toString();
+    }
+
+    private Integer readExistingParentLocationId(Scanner scanner) {
+        while (true) {
+            try {
+                showAvailableLocations();
+                System.out.print("Digite o ID do local pai (0 para nenhum): ");
+                Integer parentId = normalizeNullableId(scanner.nextInt());
+                scanner.nextLine();
+
+                if (parentId == null) {
+                    return null;
+                }
+
+                if (locationDAO.findById(parentId) != null) {
+                    return parentId;
+                }
+
+                System.out.println("Local pai informado nao existe.");
+            } catch (SQLException err) {
+                throw new RuntimeException("Erro ao listar locais.", err);
+            }
+        }
+    }
+
+    private Integer readExistingLocationTypeId(Scanner scanner) {
+        while (true) {
+            try {
+                showAvailableLocationTypes();
+                System.out.print("Digite o ID do tipo de local (0 para nenhum): ");
+                Integer locationTypeId = normalizeNullableId(scanner.nextInt());
+                scanner.nextLine();
+
+                if (locationTypeId == null) {
+                    return null;
+                }
+
+                if (locationTypeDAO.findById(locationTypeId) != null) {
+                    return locationTypeId;
+                }
+
+                System.out.println("Tipo de local informado nao existe.");
+            } catch (SQLException err) {
+                throw new RuntimeException("Erro ao listar tipos de local.", err);
+            }
+        }
+    }
+
+    private void showAvailableLocations() throws SQLException {
+        String[] headers = {"ID", "NOME"};
+        int[] widths = {4, 24};
+        List<String[]> rows = new ArrayList<>();
+
+        for (Location location : locationDAO.listAll()) {
+            rows.add(new String[]{String.valueOf(location.getId()), location.getName()});
+        }
+
+        UI.printTable(headers, widths, rows);
+    }
+
+    private void showAvailableLocationTypes() throws SQLException {
+        String[] headers = {"ID", "NOME"};
+        int[] widths = {4, 24};
+        List<String[]> rows = new ArrayList<>();
+
+        for (LocationType locationType : locationTypeDAO.listAll()) {
+            rows.add(new String[]{String.valueOf(locationType.getId()), locationType.getName()});
+        }
+
+        UI.printTable(headers, widths, rows);
     }
 
 }
