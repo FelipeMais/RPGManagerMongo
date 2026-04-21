@@ -1,5 +1,7 @@
 package model;
 
+import model.relationship.ItemAttribute;
+
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
