@@ -2,27 +2,8 @@ package factory;
 
 import connection.ConnectionConfig;
 import connection.SqlConnection;
-import contracts.DataBaseConnection;
-import contracts.ItemAttributeDAO;
-import contracts.ItemDAO;
-import contracts.LocationDAO;
-import contracts.LocationTypeDAO;
-import contracts.MagicDAO;
-import contracts.MagicAttributeDAO;
-import contracts.PlayerDAO;
-import contracts.AttributeDAO;
-import contracts.RpgClassDAO;
-import contracts.SpeciesDAO;
-import dao.AttributeSqlDAO;
-import dao.ItemAttributeSqlDAO;
-import dao.ItemSqlDAO;
-import dao.LocationSqlDAO;
-import dao.LocationTypeSqlDAO;
-import dao.MagicAttributeSqlDAO;
-import dao.MagicSqlDAO;
-import dao.PlayerSqlDAO;
-import dao.RpgClassSqlDAO;
-import dao.SpeciesSqlDAO;
+import contracts.*;
+import dao.*;
 
 import java.sql.Connection;
 
@@ -132,6 +113,15 @@ public class DaoFactory {
 
         if ("SQL".equalsIgnoreCase(dbType)){
             return new ItemSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static CharacterDAO getCharacterDAO() {
+        if (sharedConnection == null) init();;
+
+        if ("SQL".equalsIgnoreCase(dbType)){
+            return new CharacterSqlDAO((Connection) sharedConnection);
         }
         return null;
     }
