@@ -32,12 +32,12 @@ public class CharacterSqlDAO implements CharacterDAO {
     }
 
     @Override
-    public Attribute findById(Integer characterId) throws SQLException {
+    public Character findById(Integer characterId) throws SQLException {
         return null;
     }
 
     @Override
-    public List<Attribute> listAll() throws SQLException {
+    public List<Character> listAll() throws SQLException {
         return List.of();
     }
 }
