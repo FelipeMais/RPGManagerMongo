@@ -1,8 +1,12 @@
 package service;
 
 import contracts.CharacterSheetDAO;
+import contracts.RpgClassDAO;
+import contracts.SpeciesDAO;
 import factory.DaoFactory;
 import model.CharacterSheet;
+import model.RpgClass;
+import model.Species;
 import util.Option;
 import util.UI;
 
@@ -14,9 +18,13 @@ import java.util.Scanner;
 
 public class CharacterSheetService extends MenuService {
     private final CharacterSheetDAO characterSheetDAO;
+    private final RpgClassDAO rpgClassDAO;
+    private final SpeciesDAO speciesDAO;
 
     public CharacterSheetService() throws SQLException {
         this.characterSheetDAO = DaoFactory.getCharacterSheetDAO();
+        this.rpgClassDAO = DaoFactory.getRpgClassDAO();
+        this.speciesDAO = DaoFactory.getSpeciesDAO();
         this.menuTitle = "GERENCIAR FICHAS";
         this.menuOptions.add(new Option(1, "INCLUIR FICHA", this::create));
         this.menuOptions.add(new Option(2, "ATUALIZAR FICHA", this::update));
@@ -64,13 +72,8 @@ public class CharacterSheetService extends MenuService {
             scanner.nextLine();
         }
 
-        System.out.print("Digite o ID da classe (0 para nenhuma): ");
-        Integer classId = normalizeNullableId(scanner.nextInt());
-        scanner.nextLine();
-
-        System.out.print("Digite o ID da especie (0 para nenhuma): ");
-        Integer speciesId = normalizeNullableId(scanner.nextInt());
-        scanner.nextLine();
+        Integer classId = readExistingClassId(scanner);
+        Integer speciesId = readExistingSpeciesId(scanner);
 
         System.out.print("Pontos de vida maximos: ");
         Integer maxHitPoints = scanner.nextInt();
@@ -128,6 +131,7 @@ public class CharacterSheetService extends MenuService {
                 return false;
             }
             print(Collections.singletonList(characterSheet));
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar ficha!");
         }
@@ -138,6 +142,7 @@ public class CharacterSheetService extends MenuService {
         try {
             List<CharacterSheet> characterSheets = characterSheetDAO.listAll();
             print(characterSheets);
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar fichas!");
         }
@@ -181,5 +186,77 @@ public class CharacterSheetService extends MenuService {
             return "-";
         }
         return value.toString();
+    }
+
+    private Integer readExistingClassId(Scanner scanner) {
+        while (true) {
+            try {
+                showAvailableClasses();
+                System.out.print("Digite o ID da classe (0 para nenhuma): ");
+                Integer classId = normalizeNullableId(scanner.nextInt());
+                scanner.nextLine();
+
+                if (classId == null) {
+                    return null;
+                }
+
+                if (rpgClassDAO.findById(classId) != null) {
+                    return classId;
+                }
+
+                System.out.println("Classe informada nao existe.");
+            } catch (SQLException err) {
+                throw new RuntimeException("Erro ao listar classes.", err);
+            }
+        }
+    }
+
+    private Integer readExistingSpeciesId(Scanner scanner) {
+        while (true) {
+            try {
+                showAvailableSpecies();
+                System.out.print("Digite o ID da especie (0 para nenhuma): ");
+                Integer speciesId = normalizeNullableId(scanner.nextInt());
+                scanner.nextLine();
+
+                if (speciesId == null) {
+                    return null;
+                }
+
+                if (speciesDAO.findById(speciesId) != null) {
+                    return speciesId;
+                }
+
+                System.out.println("Especie informada nao existe.");
+            } catch (SQLException err) {
+                throw new RuntimeException("Erro ao listar especies.", err);
+            }
+        }
+    }
+
+    private void showAvailableClasses() throws SQLException {
+        List<RpgClass> classes = rpgClassDAO.listAll();
+        String[] headers = {"ID", "NOME"};
+        int[] widths = {4, 24};
+        List<String[]> rows = new ArrayList<>();
+
+        for (RpgClass rpgClass : classes) {
+            rows.add(new String[]{String.valueOf(rpgClass.getIdClass()), rpgClass.getClassName()});
+        }
+
+        UI.printTable(headers, widths, rows);
+    }
+
+    private void showAvailableSpecies() throws SQLException {
+        List<Species> speciesList = speciesDAO.listAll();
+        String[] headers = {"ID", "NOME"};
+        int[] widths = {4, 24};
+        List<String[]> rows = new ArrayList<>();
+
+        for (Species species : speciesList) {
+            rows.add(new String[]{String.valueOf(species.getId()), species.getName()});
+        }
+
+        UI.printTable(headers, widths, rows);
     }
 }

@@ -91,6 +91,7 @@ public class ItemService extends MenuService {
         List<ItemAttribute> attributes = new ArrayList<>();
         boolean addAttribute = true;
         while (addAttribute) {
+            showAvailableAttributes();
             System.out.print("Id do atributo (0 para encerrar)");
             Integer attributeId = scanner.nextInt();
 
@@ -154,6 +155,7 @@ public class ItemService extends MenuService {
                 return false;
             }
             print(Collections.singletonList(item));
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar item!");
         }
@@ -164,6 +166,7 @@ public class ItemService extends MenuService {
         try {
             List<Item> itemList = itemDAO.listAll();
             print(itemList);
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar item!");
         }
@@ -202,5 +205,17 @@ public class ItemService extends MenuService {
             values.add(attributeName + "(" + attribute.getValue() + ")");
         }
         return String.join(", ", values);
+    }
+
+    private void showAvailableAttributes() throws SQLException {
+        String[] headers = {"ID", "NOME"};
+        int[] widths = {4, 24};
+        List<String[]> rows = new ArrayList<>();
+
+        for (Attribute attribute : attributeDAO.listAll()) {
+            rows.add(new String[]{String.valueOf(attribute.getId()), attribute.getName()});
+        }
+
+        UI.printTable(headers, widths, rows);
     }
 }

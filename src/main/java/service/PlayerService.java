@@ -93,6 +93,7 @@ public class PlayerService extends MenuService {
                 return false;
             }
             print(Collections.singletonList(player));
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar jogador!");
         }
@@ -103,6 +104,7 @@ public class PlayerService extends MenuService {
         try {
             List<Player> players = playerDAO.listAll();
             print(players);
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar jogadores!");
         }

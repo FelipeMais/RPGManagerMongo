@@ -93,6 +93,7 @@ public class MagicService extends MenuService {
         List<MagicAttribute> attributes = new ArrayList<>();
         boolean addAttribute = true;
         while (addAttribute) {
+            showAvailableAttributes();
             System.out.print("Id do atributo (0 para encerrar): ");
             Integer attributeId = scanner.nextInt();
 
@@ -156,6 +157,7 @@ public class MagicService extends MenuService {
                 return false;
             }
             print(Collections.singletonList(magia));
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar magia!");
         }
@@ -166,6 +168,7 @@ public class MagicService extends MenuService {
         try {
             List<Magic> magicList = magicDAO.listAll();
             print(magicList);
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar magia!");
         }
@@ -205,5 +208,17 @@ public class MagicService extends MenuService {
             values.add(attributeName + "(" + attribute.getValue() + ")");
         }
         return String.join(", ", values);
+    }
+
+    private void showAvailableAttributes() throws SQLException {
+        String[] headers = {"ID", "NOME"};
+        int[] widths = {4, 24};
+        List<String[]> rows = new ArrayList<>();
+
+        for (Attribute attribute : attributeDAO.listAll()) {
+            rows.add(new String[]{String.valueOf(attribute.getId()), attribute.getName()});
+        }
+
+        UI.printTable(headers, widths, rows);
     }
 }

@@ -86,6 +86,7 @@ public class SpeciesService extends MenuService {
                 return false;
             }
             print(Collections.singletonList(species));
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar especie!");
         }
@@ -96,6 +97,7 @@ public class SpeciesService extends MenuService {
         try {
             List<Species> speciesList = speciesDAO.listAll();
             print(speciesList);
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar especies!");
         }

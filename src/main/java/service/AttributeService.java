@@ -86,6 +86,7 @@ public class AttributeService extends MenuService {
                 return false;
             }
             print(Collections.singletonList(attribute));
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar atributo!");
         }
@@ -101,6 +102,7 @@ public class AttributeService extends MenuService {
         try {
             List<Attribute> attributes = attributeDAO.listAll();
             print(attributes);
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar atributos!");
         }

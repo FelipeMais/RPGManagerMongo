@@ -89,6 +89,7 @@ public class RpgClassService extends MenuService {
                 return false;
             }
             print(Collections.singletonList(rpgClass));
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar classe!");
         }
@@ -99,6 +100,7 @@ public class RpgClassService extends MenuService {
         try {
             List<RpgClass> rpgClasses = rpgClassDAO.listAll();
             print(rpgClasses);
+            UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar classes!");
         }
