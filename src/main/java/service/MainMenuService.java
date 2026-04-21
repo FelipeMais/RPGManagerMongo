@@ -5,6 +5,7 @@ import util.Option;
 import java.sql.SQLException;
 
 public class MainMenuService extends MenuService {
+    private final ItemService itemService;
     private final LocationService locationService;
     private final MagicService magicService;
     private final PlayerService playerService;
@@ -14,6 +15,7 @@ public class MainMenuService extends MenuService {
     private final ItemService itemService;
 
     public MainMenuService() throws SQLException {
+        this.itemService = new ItemService();
         this.locationService = new LocationService();
         this.magicService = new MagicService();
         this.playerService = new PlayerService();
@@ -37,6 +39,15 @@ public class MainMenuService extends MenuService {
             return true;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao gerenciar magias", e);
+        }
+    }
+
+    private Boolean executarGerenciamentoItens() {
+        try {
+            while (itemService.execute()) { }
+            return true;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao gerenciar itens", e);
         }
     }
 

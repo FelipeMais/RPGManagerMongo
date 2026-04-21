@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.relationship.ItemAttribute;
+
 public class Item {
     private Integer id;
     private String name;
@@ -16,9 +18,10 @@ public class Item {
     private BigDecimal monetaryValue;
     private List<ItemAttribute> attributes;
 
-    public Item(String name, String description, BigDecimal weight, BigDecimal monetaryValue, List<ItemAttribute> attributes){
+    public Item(String name, String description, BigDecimal weight, BigDecimal monetaryValue, List<ItemAttribute> attributes) {
         this(null, name, description, weight, monetaryValue, attributes);
     }
+
     public Item(Integer id, String name, String description, BigDecimal weight, BigDecimal monetaryValue, List<ItemAttribute> attributes) {
         this.id = id;
         this.name = name;
@@ -34,7 +37,9 @@ public class Item {
                 result.getString(2),
                 result.getString(3),
                 result.getBigDecimal(4),
-                result.getBigDecimal(5), new ArrayList<>());
+                result.getBigDecimal(5),
+                new ArrayList<>()
+        );
     }
 
     public Integer getId() {
