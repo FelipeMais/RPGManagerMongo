@@ -144,6 +144,42 @@ public class DaoFactory {
         return null;
     }
 
+    public static CombatActionTypeDAO getCombatActionTypeDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new CombatActionTypeSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static CombatDAO getCombatDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new CombatSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static CombatActionDAO getCombatActionDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new CombatActionSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static CombatantDAO getCombatantDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new CombatantSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
     public static void close() {
         if (dbManager != null) {
             dbManager.closeConnection();
