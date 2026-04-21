@@ -1,6 +1,7 @@
 package dao;
 
 import contracts.CharacterDAO;
+import model.relationship.InventoryItem;
 import model.Character;
 
 import java.sql.Connection;
@@ -14,25 +15,51 @@ import java.util.List;
 
 public class CharacterSqlDAO implements CharacterDAO {
     private final Connection connection;
+    private final InventorySqlDAO inventoryDAO;
 
     public CharacterSqlDAO(Connection connection) {
         this.connection = connection;
+        this.inventoryDAO = new InventorySqlDAO(connection);
     }
 
     @Override
-    public void insert(Character newCharacter) throws SQLException {
-        PreparedStatement st = connection.prepareStatement(
-                "INSERT INTO personagem(id_jogador, id_ficha, local_atual, nome_personagem, pontos_vida, pontos_mana, historia) VALUES (?, ?, ?, ?, ?, ?, ?)"
-        );
-        setNullableInteger(st, 1, newCharacter.getPlayerId());
-        setNullableInteger(st, 2, newCharacter.getSheetId());
-        setNullableInteger(st, 3, newCharacter.getCurrentLocationId());
-        st.setString(4, newCharacter.getName());
-        st.setInt(5, newCharacter.getHitPoints());
-        st.setInt(6, newCharacter.getManaPoints());
-        st.setString(7, newCharacter.getHistory());
-        st.execute();
-        st.close();
+    public Integer insert(Character newCharacter) throws SQLException {
+        boolean autoCommit = connection.getAutoCommit();
+        connection.setAutoCommit(false);
+        try {
+            PreparedStatement st = connection.prepareStatement(
+                    "INSERT INTO personagem(id_jogador, id_ficha, local_atual, nome_personagem, pontos_vida, pontos_mana, historia) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
+            );
+            setNullableInteger(st, 1, newCharacter.getPlayerId());
+            setNullableInteger(st, 2, newCharacter.getSheetId());
+            setNullableInteger(st, 3, newCharacter.getCurrentLocationId());
+            st.setString(4, newCharacter.getName());
+            st.setInt(5, newCharacter.getHitPoints());
+            st.setInt(6, newCharacter.getManaPoints());
+            st.setString(7, newCharacter.getHistory());
+            st.executeUpdate();
+
+            ResultSet generatedKeys = st.getGeneratedKeys();
+            if (!generatedKeys.next()) {
+                generatedKeys.close();
+                st.close();
+                throw new SQLException("Nao foi possivel obter o ID do personagem criado.");
+            }
+
+            Integer characterId = generatedKeys.getInt(1);
+            generatedKeys.close();
+            st.close();
+
+            persistInventory(characterId, newCharacter.getInventory());
+            connection.commit();
+            return characterId;
+        } catch (SQLException err) {
+            connection.rollback();
+            throw err;
+        } finally {
+            connection.setAutoCommit(autoCommit);
+        }
     }
 
     @Override
@@ -54,10 +81,21 @@ public class CharacterSqlDAO implements CharacterDAO {
 
     @Override
     public void remove(Integer characterId) throws SQLException {
-        PreparedStatement st = connection.prepareStatement("DELETE FROM personagem WHERE id_personagem = ?");
-        st.setInt(1, characterId);
-        st.execute();
-        st.close();
+        boolean autoCommit = connection.getAutoCommit();
+        connection.setAutoCommit(false);
+        try {
+            inventoryDAO.removeByCharacterId(characterId);
+            PreparedStatement st = connection.prepareStatement("DELETE FROM personagem WHERE id_personagem = ?");
+            st.setInt(1, characterId);
+            st.execute();
+            st.close();
+            connection.commit();
+        } catch (SQLException err) {
+            connection.rollback();
+            throw err;
+        } finally {
+            connection.setAutoCommit(autoCommit);
+        }
     }
 
     @Override
@@ -69,7 +107,9 @@ public class CharacterSqlDAO implements CharacterDAO {
         st.setInt(1, characterId);
         ResultSet result = st.executeQuery();
         while (result.next()) {
-            list.add(Character.fromResultSet(result));
+            Character character = Character.fromResultSet(result);
+            character.setInventory(inventoryDAO.findByCharacterId(character.getId()));
+            list.add(character);
         }
         st.close();
         if (!list.isEmpty()) {
@@ -86,10 +126,27 @@ public class CharacterSqlDAO implements CharacterDAO {
                 "SELECT id_personagem, id_jogador, id_ficha, local_atual, nome_personagem, pontos_vida, pontos_mana, historia FROM personagem"
         );
         while (result.next()) {
-            list.add(Character.fromResultSet(result));
+            Character character = Character.fromResultSet(result);
+            character.setInventory(inventoryDAO.findByCharacterId(character.getId()));
+            list.add(character);
         }
         st.close();
         return list;
+    }
+
+    private void persistInventory(Integer characterId, List<InventoryItem> inventoryItems) throws SQLException {
+        if (inventoryItems == null) {
+            return;
+        }
+
+        for (InventoryItem inventoryItem : inventoryItems) {
+            inventoryDAO.insert(new InventoryItem(
+                    inventoryItem.getItemId(),
+                    characterId,
+                    inventoryItem.getQuantity(),
+                    inventoryItem.getItem()
+            ));
+        }
     }
 
     private void setNullableInteger(PreparedStatement st, int parameterIndex, Integer value) throws SQLException {
