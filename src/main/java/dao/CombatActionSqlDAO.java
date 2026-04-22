@@ -2,6 +2,7 @@ package dao;
 
 import contracts.CombatActionDAO;
 import model.CombatAction;
+import model.dto.AcaoCombateDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -84,5 +85,41 @@ public class CombatActionSqlDAO implements CombatActionDAO {
             return;
         }
         st.setInt(parameterIndex, value);
+    }
+
+    @Override
+    public List<AcaoCombateDTO> listReportByActorIdAndType(Integer actorId, Integer actionTypeId) throws SQLException {
+        List<AcaoCombateDTO> reportList = new ArrayList<>();
+
+        String sql = "SELECT ac.id_combate, ac.ordem_turno, tac.nome_acao_combate, " +
+                "p_alvo.nome_personagem AS nome_alvo, i.nome_item, m.nome_magia AS nome_magia, ac.valor_resultado " +
+                "FROM acaocombate ac " +
+                "INNER JOIN tipoacaocombate tac ON ac.id_tipo_acao_combate = tac.id_tipo_acao_combate " +
+                "LEFT JOIN personagem p_alvo ON ac.id_alvo = p_alvo.id_personagem " +
+                "LEFT JOIN itens i ON ac.id_item_usado = i.id_item " +
+                "LEFT JOIN magias m ON ac.id_magia_usada = m.id_magia " +
+                "WHERE ac.id_agente = ? AND (? = 0 OR ac.id_tipo_acao_combate = ?) " +
+                "ORDER BY ac.id_combate, ac.ordem_turno";
+
+        PreparedStatement st = connection.prepareStatement(sql);
+        st.setInt(1, actorId);
+        st.setInt(2, actionTypeId);
+        st.setInt(3, actionTypeId);
+
+        ResultSet result = st.executeQuery();
+        while (result.next()) {
+            reportList.add(new AcaoCombateDTO(
+                    result.getInt("id_combate"),
+                    result.getInt("ordem_turno"),
+                    result.getString("nome_acao_combate"),
+                    result.getString("nome_alvo"),
+                    result.getString("nome_item"),
+                    result.getString("nome_magia"),
+                    result.getInt("valor_resultado")
+            ));
+        }
+        st.close();
+
+        return reportList;
     }
 }
