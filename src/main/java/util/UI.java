@@ -9,6 +9,15 @@ public class UI {
     private static final String separator = "=";
     private static final String columnSeparator = " | ";
 
+    public static void printRow(String content, int totalWidth) {
+        String visibleContent = Colors.strip(content);
+        int paddingNeeded = totalWidth - visibleContent.length();
+
+        System.out.println(Colors.CYAN + "║ " + Colors.RESET +
+                content + " ".repeat(Math.max(0, paddingNeeded)) +
+                Colors.CYAN + " ║" + Colors.RESET);
+    }
+
     public static void printLine(){
         System.out.println(separator.repeat(Math.max(0, width)));
     }

@@ -19,16 +19,18 @@ import model.Player;
 import model.RpgClass;
 import model.Species;
 import model.relationship.InventoryItem;
+import util.Colors;
 import util.Option;
 import util.UI;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
+import static util.Colors.*;
 
 public class CharacterService extends MenuService {
     private final CharacterDAO characterDAO;
@@ -170,7 +172,7 @@ public class CharacterService extends MenuService {
                 System.out.println("Personagem nao encontrado");
                 return false;
             }
-            print(Collections.singletonList(character));
+            detail(character);
             UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar personagem!");
@@ -243,6 +245,67 @@ public class CharacterService extends MenuService {
         }
 
         UI.printTable(headers, widths, rows);
+    }
+
+    private void detail(Character character) throws SQLException {
+        int width = 60;
+        CharacterSheet sheet = characterSheetDAO.findById(character.getSheetId());
+        Player p = character.getPlayerId() != null ? playerDAO.findById(character.getPlayerId()) : null;
+        Location l = character.getCurrentLocationId() != null ? locationDAO.findById(character.getCurrentLocationId()) : null;
+
+        System.out.println("\n" + Colors.CYAN + "╔" + "═".repeat(width + 2) + "╗");
+
+        UI.printRow(Colors.BOLD + "JOGADOR: " + Colors.RESET + (p != null ? p.getName() : "NPC"), width);
+        UI.printRow(Colors.BOLD + character.getName().toUpperCase() + Colors.GRAY + " #" + character.getId(), width);
+        UI.printRow(Colors.RED + "HP: " + character.getHitPoints() + "/" + (sheet != null ? sheet.getMaxHitPoints() : "??") +
+                Colors.BLUE + "  MP: " + character.getManaPoints() + "/" + (sheet != null ? sheet.getMaxManaPoints() : "??"), width);
+        UI.printRow(Colors.BOLD + "LOCAL:   " + Colors.RESET + (l != null ? l.getName() : "Desconhecido"), width);
+        System.out.println(Colors.CYAN + "╠" + "═".repeat(width + 2) + "╣");
+
+        String rClass = sheet.getClassId() != null ? rpgClassDAO.findById(sheet.getClassId()).getClassName() : "None";
+        String spec = sheet.getSpeciesId() != null ? speciesDAO.findById(sheet.getSpeciesId()).getName() : "Unknown";
+
+        UI.printRow(Colors.BOLD + "FICHA TÉCNICA - LV. " + sheet.getLevel(), width);
+        UI.printRow(Colors.BLUE + rClass + Colors.RESET + " | " + Colors.GREEN + spec, width);
+        System.out.println(Colors.CYAN + "╠" + "═".repeat(width + 2) + "╣");
+
+        UI.printRow(Colors.YELLOW + " STR: " + Colors.RESET + String.format("%-4d", sheet.getStrength()) + Colors.YELLOW + " INT: " + Colors.RESET + sheet.getIntelligence(), width);
+        UI.printRow(Colors.YELLOW + " DEX: " + Colors.RESET + String.format("%-4d", sheet.getDexterity()) + Colors.YELLOW + " WIS: " + Colors.RESET + sheet.getWisdom(), width);
+        UI.printRow(Colors.YELLOW + " CON: " + Colors.RESET + String.format("%-4d", sheet.getConstitution()) + Colors.YELLOW + " CHA: " + Colors.RESET + sheet.getCharisma(), width);
+
+        System.out.println(Colors.CYAN + "╟" + "─".repeat(width + 2) + "╢");
+        UI.printRow(Colors.BOLD + "[ HABILIDADES ]", width);
+        if (sheet.getKnownAbilities() != null && !sheet.getKnownAbilities().isEmpty()) {
+            for (var ab : sheet.getKnownAbilities()) UI.printRow(" • " + ab.getName(), width);
+        } else { UI.printRow(Colors.GRAY + "  (Nenhuma habilidade)", width); }
+
+        System.out.println(Colors.CYAN + "╟" + "─".repeat(width + 2) + "╢");
+        UI.printRow(Colors.BOLD + "[ MAGIAS CONHECIDAS ]", width);
+        if (sheet.getKnownMagics() != null && !sheet.getKnownMagics().isEmpty()) {
+            for (var mg : sheet.getKnownMagics()) UI.printRow(" * " + Colors.PURPLE + mg.getName(), width);
+        } else { UI.printRow(Colors.GRAY + "  (Nenhuma magia)", width); }
+
+        System.out.println(Colors.CYAN + "╠" + "═".repeat(width + 2) + "╣" + Colors.RESET);
+        UI.printRow(Colors.BOLD + "[ INVENTÁRIO ]", width);
+        if (character.getInventory() != null && !character.getInventory().isEmpty()) {
+            for (var inv : character.getInventory()) {
+                UI.printRow(" x" + inv.getQuantity() + " " + (inv.getItem() != null ? inv.getItem().getName() : "Item #" + inv.getItemId()), width);
+            }
+        } else { UI.printRow(Colors.GRAY + "  (Vazio)", width); }
+
+        System.out.println(Colors.CYAN + "╠" + "═".repeat(width + 2) + "╣");
+
+        UI.printRow(BOLD + "[ HISTÓRIA ]" + RESET, width);
+        String history = (character.getHistory() != null) ? character.getHistory() : "A história deste personagem é desconhecida...";
+        while (history.length() > width) {
+            int cut = history.lastIndexOf(' ', width);
+            if (cut == -1) cut = width;
+            UI.printRow(GRAY + history.substring(0, cut).trim() + RESET, width);
+            history = history.substring(cut).trim();
+        }
+        UI.printRow(GRAY + history + RESET, width);
+
+        System.out.println(CYAN + "╚" + "═".repeat(width + 2) + "╝" + RESET + "\n");
     }
 
     private Map<Integer, Player> mapPlayersById(List<Player> players) {

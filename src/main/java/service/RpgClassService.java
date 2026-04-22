@@ -3,6 +3,7 @@ package service;
 import contracts.RpgClassDAO;
 import factory.DaoFactory;
 import model.RpgClass;
+import util.Colors;
 import util.Option;
 import util.UI;
 
@@ -88,7 +89,7 @@ public class RpgClassService extends MenuService {
                 System.out.println("Classe nao encontrada");
                 return false;
             }
-            print(Collections.singletonList(rpgClass));
+            detail(rpgClass);
             UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar classe!");
@@ -121,5 +122,16 @@ public class RpgClassService extends MenuService {
         }
 
         UI.printTable(headers, widths, rows);
+    }
+
+    private void detail(RpgClass rpgClass) {
+        int width = 45;
+        System.out.println("\n" + Colors.CYAN + "╔" + "═".repeat(width + 2) + "╗");
+        UI.printRow(Colors.BOLD + rpgClass.getClassName().toUpperCase(), width);
+        if (rpgClass.getDescription() != null) {
+            System.out.println(Colors.CYAN + "╟" + "─".repeat(width + 2) + "╢");
+            UI.printRow(Colors.GRAY + rpgClass.getDescription(), width);
+        }
+        System.out.println(Colors.CYAN + "╚" + "═".repeat(width + 2) + "╝\n"+ Colors.RESET);
     }
 }

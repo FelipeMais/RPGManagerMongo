@@ -3,6 +3,7 @@ package service;
 import contracts.AttributeDAO;
 import factory.DaoFactory;
 import model.Attribute;
+import util.Colors;
 import util.Option;
 import util.UI;
 
@@ -85,7 +86,7 @@ public class AttributeService extends MenuService {
                 System.out.println("Atributo nao encontrado");
                 return false;
             }
-            print(Collections.singletonList(attribute));
+            detail(attribute);
             UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar atributo!");
@@ -122,5 +123,12 @@ public class AttributeService extends MenuService {
         }
 
         UI.printTable(headers, widths, rows);
+    }
+
+    private void detail(Attribute attribute) {
+        int width = 45;
+        System.out.println("\n" + Colors.CYAN + "╔" + "═".repeat(width + 2) + "╗");
+        UI.printRow(Colors.BOLD + attribute.getName().toUpperCase(), width);
+        System.out.println(Colors.CYAN + "╚" + "═".repeat(width + 2) + "╝\n"+ Colors.RESET);
     }
 }

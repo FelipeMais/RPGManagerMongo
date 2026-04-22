@@ -3,6 +3,7 @@ package service;
 import contracts.AbilityDAO;
 import factory.DaoFactory;
 import model.Ability;
+import util.Colors;
 import util.Option;
 import util.UI;
 
@@ -91,7 +92,7 @@ public class AbilityService extends MenuService {
                 System.out.println("Habilidade nao encontrada");
                 return false;
             }
-            print(Collections.singletonList(ability));
+            detail(ability);
             UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar habilidade!");
@@ -125,5 +126,16 @@ public class AbilityService extends MenuService {
         }
 
         UI.printTable(headers, widths, rows);
+    }
+
+    private void detail(Ability ability) { // Replace T with the specific model
+        int width = 45;
+        System.out.println("\n" + Colors.CYAN + "╔" + "═".repeat(width + 2) + "╗");
+        UI.printRow(Colors.BOLD + ability.getName().toUpperCase(), width);
+        if (ability.getDescription() != null) {
+            System.out.println(Colors.CYAN + "╟" + "─".repeat(width + 2) + "╢");
+            UI.printRow(Colors.GRAY + ability.getDescription(), width);
+        }
+        System.out.println(Colors.CYAN + "╚" + "═".repeat(width + 2) + "╝\n"+ Colors.RESET);
     }
 }

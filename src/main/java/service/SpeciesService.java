@@ -3,6 +3,7 @@ package service;
 import contracts.SpeciesDAO;
 import factory.DaoFactory;
 import model.Species;
+import util.Colors;
 import util.Option;
 import util.UI;
 
@@ -85,7 +86,7 @@ public class SpeciesService extends MenuService {
                 System.out.println("Especie nao encontrada");
                 return false;
             }
-            print(Collections.singletonList(species));
+            detail(species);
             UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar especie!");
@@ -117,5 +118,12 @@ public class SpeciesService extends MenuService {
         }
 
         UI.printTable(headers, widths, rows);
+    }
+
+    private void detail(Species species) {
+        int width = 45;
+        System.out.println("\n" + Colors.CYAN + "╔" + "═".repeat(width + 2) + "╗");
+        UI.printRow(Colors.BOLD + species.getName().toUpperCase(), width);
+        System.out.println(Colors.CYAN + "╚" + "═".repeat(width + 2) + "╝\n"+ Colors.RESET);
     }
 }
