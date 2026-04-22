@@ -23,11 +23,11 @@
       </counter>
       <counter>
         <item-type type-id="erd-relationship" type="Relationship" />
-        <value>101</value>
+        <value>102</value>
       </counter>
       <counter>
         <item-type type-id="universal-connector" type="Universal Connector" />
-        <value>79</value>
+        <value>80</value>
       </counter>
       <counter>
         <item-type type-id="text" type="Text" />
@@ -98,12 +98,12 @@
     </custom-types>
   </types>
   <items>
-    <item id="132fc45f33c049f5a48a66a7a33b7b4b" cid="ENT004" type="erd-entity" name="Localidade" style-class="Flat Orange" creation-date="03/28/2026 15:24:44">
+    <item id="132fc45f33c049f5a48a66a7a33b7b4b" cid="ENT004" type="erd-entity" name="Local" style-class="Flat Orange" creation-date="03/28/2026 15:24:44">
       <style class="Flat Orange" />
       <entity description="" />
       <attributes>
         <attribute uid="1bf9951622ed47658f91a8b158a000ce" cid="EA020" name="local_pai" type="" type-id="" foreign-key="true" nullable="false" creation-date="04/10/2026 13:37:14" />
-        <attribute uid="2eb42b118713436497a3b72d65a3760f" cid="EA017" name="id_localidade" type="" type-id="" primary-key="true" nullable="false" creation-date="03/28/2026 15:25:00" />
+        <attribute uid="2eb42b118713436497a3b72d65a3760f" cid="EA017" name="id_local" type="" type-id="" primary-key="true" nullable="false" creation-date="03/28/2026 15:25:00" />
         <attribute uid="b804ddf29589456c8f55fc78befba989" cid="EA020" name="id_tipo_local" type="" type-id="" foreign-key="true" nullable="false" creation-date="04/10/2026 13:37:14" />
         <attribute uid="3b42b86b7b434a1197aace826c617ba5" cid="EA018" name="nome_local" type="" type-id="" nullable="false" creation-date="03/28/2026 15:25:11" />
         <attribute uid="2a7aad1381ae430fbe0fef1d329ba216" cid="EA019" name="descricao" type="" type-id="" nullable="false" creation-date="04/10/2026 13:37:03" />
@@ -203,7 +203,7 @@
       <entity description="" />
       <attributes>
         <attribute uid="30beb103782243108f1be67ca2705cc6" cid="EA017" name="id_combate" type="" type-id="" primary-key="true" nullable="false" creation-date="03/28/2026 15:25:00" />
-        <attribute uid="0a809ab691d24466a09e1132ca8af1fc" cid="EA018" name="id_localidade" type="" type-id="" foreign-key="true" nullable="false" creation-date="03/28/2026 15:25:11" />
+        <attribute uid="0a809ab691d24466a09e1132ca8af1fc" cid="EA018" name="id_local" type="" type-id="" foreign-key="true" nullable="false" creation-date="03/28/2026 15:25:11" />
         <attribute uid="5f4500f074354ef7aeb7a0f0a895f224" cid="EA019" name="data" type="" type-id="" nullable="false" creation-date="04/10/2026 13:37:03" />
         <attribute uid="c8ab35854a6343c0b6e39ed1ab5fa864" cid="EA020" name="sumario" type="" type-id="" nullable="false" creation-date="04/10/2026 13:37:14" />
       </attributes>
@@ -295,7 +295,7 @@
           </authors>
           <description />
           <creation-date>03/28/2026 14:50:04</creation-date>
-          <change-date>04/17/2026 19:03:44</change-date>
+          <change-date>04/21/2026 17:55:49</change-date>
           <revision-count>0</revision-count>
           <version />
         </meta>
@@ -342,7 +342,7 @@
           <item id="555a25a198f843159d43d0a3f72f2b41" cid="REL082" type="erd-relationship" creation-date="04/11/2026 20:42:16" from="83704b33130e49779bd45f8e04246189" to="903e6087e2694b02bc73cad462e9ee1c">
             <erd-relation type="Identifying" multiplicity-from="*" multiplicity-to="0..1">
               <attribute-pairs>
-                <attribute-pair from-attribute="a1d45fd2516ef426288666730b10871c5738" to-attribute="aef863edd8e3445f99dbd30818f37eed5774" />
+                <attribute-pair from-attribute="" to-attribute="" />
               </attribute-pairs>
             </erd-relation>
           </item>
@@ -419,6 +419,13 @@
               </attribute-pairs>
             </erd-relation>
           </item>
+          <item id="45c97c0cf502443291fe6cdba4716c5e" cid="ENT011" type="erd-entity" name="MagiaDaEscola" creation-date="04/11/2026 18:11:11">
+            <entity description="" />
+            <attributes>
+              <attribute uid="ae60b037af84e448eabca3c12b993ce5e119" cid="EA041" name="id_escola_magia" type="" type-id="" foreign-key="true" primary-key="true" nullable="false" creation-date="04/11/2026 18:11:11" />
+              <attribute uid="a03e3e23eb9ad4fca8f52552b9f00ee24119" cid="EA042" name="id_magia" type="" type-id="" foreign-key="true" primary-key="true" nullable="false" creation-date="04/11/2026 18:11:11" />
+            </attributes>
+          </item>
           <item id="545f5025f3f94efda082a71b8be8a5c1" cid="REL090" type="erd-relationship" creation-date="04/11/2026 21:32:37" from="f5d8584e6f3d413e88c68666d8208da4" to="df993e6064434605b7af5fb58495e2bf">
             <erd-relation type="Identifying" multiplicity-from="0..1" multiplicity-to="0..*">
               <attribute-pairs />
@@ -434,23 +441,11 @@
               <attribute-pairs />
             </erd-relation>
           </item>
-          <item id="35b5742cea1e4a0dbb9f4f00e37cc233" cid="REL048" type="erd-relationship" creation-date="04/11/2026 18:09:20" from="86b727b18a5d4a52a17087327dcb281d" to="951a6094c44b45ad9c31091460642780">
-            <erd-relation type="Identifying" multiplicity-from="*" multiplicity-to="0..1">
-              <attribute-pairs>
-                <attribute-pair from-attribute="ab6a693d33c1b4eaa9a82d15f19c55b62717" to-attribute="c7eead50dc2940089f9b870a362f3e9f" />
-              </attribute-pairs>
-            </erd-relation>
-          </item>
           <item id="bd51a32846a24268b2abde9c7ad83cf9" cid="REL073" type="erd-relationship" creation-date="04/11/2026 19:43:49" from="499d3cf47ada41a0be35f601acc94e83" to="b0012fa151504eaab7b312e5e328654c">
             <erd-relation type="Identifying" multiplicity-from="*" multiplicity-to="0..1">
               <attribute-pairs>
                 <attribute-pair from-attribute="af9ae8c125238404ca2e856323d3cb748216" to-attribute="22847274136c4de59cc951a927c29841" />
               </attribute-pairs>
-            </erd-relation>
-          </item>
-          <item id="21b4e03ec0424dfaa1951b80f47948a8" cid="REL068" type="erd-relationship" creation-date="04/11/2026 19:19:32" from="afb3b798a20f4467ac63e59804fb15bf" to="951a6094c44b45ad9c31091460642780">
-            <erd-relation type="Identifying" multiplicity-from="0..1" multiplicity-to="*">
-              <attribute-pairs />
             </erd-relation>
           </item>
           <item id="27f6b1743f5d41c5bfad8397208d5d66" cid="ENT012" type="erd-entity" name="MagiaCaracteristicas" creation-date="04/11/2026 18:15:10">
@@ -468,16 +463,6 @@
               </attribute-pairs>
             </erd-relation>
           </item>
-          <item id="084b7babe6f84d279bef6236a7047653" cid="REL063" type="erd-relationship" creation-date="04/11/2026 18:54:17" from="83b503207f6e46139e40aa0a672fa552" to="3fee3965f0ec4638b12e3349296a2ddc">
-            <erd-relation type="Identifying" multiplicity-from="*" multiplicity-to="0..1">
-              <attribute-pairs />
-            </erd-relation>
-          </item>
-          <item id="0a6b7608aa2a4357b08d7dc150cbdd34" cid="REL097" type="erd-relationship" name="local_pai" creation-date="04/11/2026 21:45:58" from="132fc45f33c049f5a48a66a7a33b7b4b" to="132fc45f33c049f5a48a66a7a33b7b4b">
-            <erd-relation type="Identifying" multiplicity-from="*" multiplicity-to="0..1">
-              <attribute-pairs />
-            </erd-relation>
-          </item>
           <item id="6f8c1cf58cdc49df862d391ce6f82e98" cid="REL057" type="erd-relationship" creation-date="04/11/2026 18:15:10" from="27f6b1743f5d41c5bfad8397208d5d66" to="12fd36e9e36f4e8ab22d8c21d926d7d7">
             <erd-relation type="Identifying" multiplicity-from="*" multiplicity-to="0..1">
               <attribute-pairs>
@@ -490,6 +475,11 @@
               <attribute-pairs>
                 <attribute-pair from-attribute="a414932a01cc948669f332e39d9c09bdb981" to-attribute="c7eead50dc2940089f9b870a362f3e9f" />
               </attribute-pairs>
+            </erd-relation>
+          </item>
+          <item id="0a6b7608aa2a4357b08d7dc150cbdd34" cid="REL097" type="erd-relationship" name="local_pai" creation-date="04/11/2026 21:45:58" from="132fc45f33c049f5a48a66a7a33b7b4b" to="132fc45f33c049f5a48a66a7a33b7b4b">
+            <erd-relation type="Identifying" multiplicity-from="*" multiplicity-to="0..1">
+              <attribute-pairs />
             </erd-relation>
           </item>
           <item id="d848e14bff554d8da82b49e6488dc410" cid="REL094" type="erd-relationship" name="id_agente" creation-date="04/11/2026 21:38:15" from="903e6087e2694b02bc73cad462e9ee1c" to="df993e6064434605b7af5fb58495e2bf">
@@ -516,13 +506,10 @@
               <attribute-pairs />
             </erd-relation>
           </item>
-          <item id="c76eb015879845fbb5b6a38f69557762" cid="ENT006" type="erd-entity" name="ItemCaracteristicas" creation-date="04/11/2026 15:33:13">
-            <entity description="" />
-            <attributes>
-              <attribute uid="a4d3ce6afc80e4388901630dc5b98b0b2795" cid="EA024" name="id_qualidade" type="" type-id="" foreign-key="true" primary-key="true" nullable="false" creation-date="04/11/2026 15:33:13" />
-              <attribute uid="af5b0df8d41f646c6b5f1ce567bbab755796" cid="EA025" name="id_item" type="" type-id="" foreign-key="true" primary-key="true" nullable="false" creation-date="04/11/2026 15:33:13" />
-              <attribute uid="a18b95574ee814169b955bd44bc5371cf611" cid="EA026" name="valor" type="" type-id="" nullable="false" creation-date="04/11/2026 15:33:47" />
-            </attributes>
+          <item id="c8a1ef8a31b449f89e3c3fb247352d5c" cid="REL101" type="erd-relationship" creation-date="04/21/2026 17:55:49" from="132fc45f33c049f5a48a66a7a33b7b4b" to="bfbcf93d3deb4feea4e16a96f6279c4a">
+            <erd-relation type="Identifying" multiplicity-from="0..1" multiplicity-to="*">
+              <attribute-pairs />
+            </erd-relation>
           </item>
           <item id="de322b73e6834f04881345fcffe36130" cid="REL081" type="erd-relationship" creation-date="04/11/2026 20:42:16" from="83704b33130e49779bd45f8e04246189" to="bfbcf93d3deb4feea4e16a96f6279c4a">
             <erd-relation type="Identifying" multiplicity-from="*" multiplicity-to="1">
@@ -530,6 +517,14 @@
                 <attribute-pair from-attribute="a414b71cff198493ab198cc9825e1d5ce738" to-attribute="30beb103782243108f1be67ca2705cc6" />
               </attribute-pairs>
             </erd-relation>
+          </item>
+          <item id="c76eb015879845fbb5b6a38f69557762" cid="ENT006" type="erd-entity" name="ItemCaracteristicas" creation-date="04/11/2026 15:33:13">
+            <entity description="" />
+            <attributes>
+              <attribute uid="a4d3ce6afc80e4388901630dc5b98b0b2795" cid="EA024" name="id_qualidade" type="" type-id="" foreign-key="true" primary-key="true" nullable="false" creation-date="04/11/2026 15:33:13" />
+              <attribute uid="af5b0df8d41f646c6b5f1ce567bbab755796" cid="EA025" name="id_item" type="" type-id="" foreign-key="true" primary-key="true" nullable="false" creation-date="04/11/2026 15:33:13" />
+              <attribute uid="a18b95574ee814169b955bd44bc5371cf611" cid="EA026" name="valor" type="" type-id="" nullable="false" creation-date="04/11/2026 15:33:47" />
+            </attributes>
           </item>
           <item id="c02b3d2c3bc04f7487f73a7be1ebd8f2" cid="REL069" type="erd-relationship" creation-date="04/11/2026 19:28:06" from="16ce932dea6745e3a2c0485870605905" to="129f82e57d3f451db64aaf54e7b7b6ed">
             <erd-relation type="Identifying" multiplicity-from="0..1" multiplicity-to="*">
@@ -768,9 +763,9 @@
             <erd-entity show-nullability="true" />
           </item>
           <item id="8a305bdc10da4c9c8d009c55ef912da0" iid="e40ab0307f034bb7a996169064cc0703" creation-date="04/11/2026 21:31:47" order-index="85" type="relation">
-            <layout start-role-position="25,15" end-role-position="25,-15" line-style="oblique" lock-start-point="true" lock-end-point="true" lock-to-fields="false" auto-path="" x1="820" y1="220" x2="276" y2="282" start-border-pos="0.6251042683919271" end-border-pos="0.34907930344343185" start-local-pos="143.87988" end-local-pos="71.06653" name-position="0,20">
+            <layout start-role-position="25,15" end-role-position="25,-15" line-style="oblique" lock-start-point="true" lock-end-point="true" lock-to-fields="false" auto-path="" x1="988" y1="1" x2="276" y2="282" start-border-pos="0.6251042683919271" end-border-pos="0.34907930344343185" start-local-pos="143.87988" end-local-pos="71.06653" name-position="0,20">
               <points>
-                <point x="820" y="220" />
+                <point x="988" y="1" />
                 <point x="820" y="273" />
                 <point x="276" y="282" />
               </points>
@@ -854,6 +849,15 @@
               </points>
             </layout>
             <relation from="ccd9eb5c3267408e825db2444c32b637" from-iid="ee11d1a4121041779b7ec444b20bd06b" to="903e6087e2694b02bc73cad462e9ee1c" to-iid="2cd92b87a37445bbbdc08691a1d605d2" />
+          </item>
+          <item id="c8a1ef8a31b449f89e3c3fb247352d5c" iid="6c5f47d637824585a8c2ed3f43df0486" creation-date="04/21/2026 17:55:49" order-index="94" type="relation">
+            <layout start-role-position="25,15" end-role-position="25,-15" line-style="oblique" lock-start-point="true" lock-to-fields="false" auto-path="" x1="844" y1="-79" x2="624" y2="-77" start-border-pos="0.8753786087036133" end-border-pos="0.3738471269607544" name-position="0,20">
+              <points>
+                <point x="844" y="-79" />
+                <point x="624" y="-77" />
+              </points>
+            </layout>
+            <relation from="132fc45f33c049f5a48a66a7a33b7b4b" from-iid="1f710a3eaded435c9f1fec52c368c64c" to="bfbcf93d3deb4feea4e16a96f6279c4a" to-iid="c7e0a8f2a2754fc89010df1c325bacea" />
           </item>
         </layer>
       </diagram>

@@ -98,7 +98,7 @@ public class LocationService extends MenuService {
                 System.out.println("Local nao encontrado");
                 return true;
             }
-            print(Collections.singletonList(location));
+            detail(location);
             UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar local!");
@@ -142,6 +142,40 @@ public class LocationService extends MenuService {
         }
 
         UI.printTable(headers, widths, rows);
+    }
+
+    private void detail(Location location) throws SQLException {
+        String RESET = "\u001B[0m", BOLD = "\u001B[1m", GREEN = "\u001B[32m",
+                CYAN = "\u001B[36m", GRAY = "\u001B[90m";
+        int width = 50;
+
+        Location parent = location.getParentId() != null ? locationDAO.findById(location.getParentId()) : null;
+        LocationType type = location.getLocationTypeId() != null ? locationTypeDAO.findById(location.getLocationTypeId()) : null;
+
+        System.out.println("\n" + CYAN + "╔" + "═".repeat(width + 2) + "╗" + RESET);
+        UI.printRow(BOLD + GREEN + location.getName().toUpperCase() + RESET, width);
+        UI.printRow(GRAY + (type != null ? type.getName() : "Terra Incognita") + RESET, width);
+        System.out.println(CYAN + "╠" + "═".repeat(width + 2) + "╣" + RESET);
+
+        String parentName = (parent != null) ? parent.getName() : " - ";
+        UI.printRow(BOLD + "REGIÃO: " + RESET + parentName, width);
+
+        System.out.println(CYAN + "╟" + "─".repeat(width + 2) + "╢" + RESET);
+
+        if (location.getDescription() != null && !location.getDescription().isBlank()) {
+            String desc = location.getDescription();
+            while (desc.length() > width) {
+                int cut = desc.lastIndexOf(' ', width);
+                if (cut == -1) cut = width;
+                UI.printRow(GRAY + desc.substring(0, cut).trim() + RESET, width);
+                desc = desc.substring(cut).trim();
+            }
+            UI.printRow(GRAY + desc + RESET, width);
+        } else {
+            UI.printRow(GRAY + "Uma área misteriosa e desconhecida." + RESET, width);
+        }
+
+        System.out.println(CYAN + "╚" + "═".repeat(width + 2) + "╝" + RESET + "\n");
     }
 
     private Integer normalizeNullableId(Integer value) {

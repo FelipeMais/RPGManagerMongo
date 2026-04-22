@@ -105,7 +105,8 @@ public class CharacterSheetService extends MenuService {
         if (askId) {
             return new CharacterSheet(id, classId, speciesId, maxHitPoints, maxManaPoints, strength, dexterity, constitution, intelligence, wisdom, charisma, level);
         }
-        return new CharacterSheet(classId, speciesId, maxHitPoints, maxManaPoints, strength, dexterity, constitution, intelligence, wisdom, charisma, level);
+        //TO DO: arrumar skill e magia conhecida
+        return new CharacterSheet(classId, speciesId, maxHitPoints, maxManaPoints, strength, dexterity, constitution, intelligence, wisdom, charisma, level, null);
     }
 
     private Boolean remove() {

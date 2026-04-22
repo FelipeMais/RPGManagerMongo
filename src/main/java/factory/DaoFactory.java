@@ -135,6 +135,24 @@ public class DaoFactory {
         return null;
     }
 
+    public static SkillDAO getSkillDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new SkillSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static CharacterSheetSkillDAO getCharacterSheetSkillDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new CharacterSheetSkillSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
     public static void close() {
         if (dbManager != null) {
             dbManager.closeConnection();

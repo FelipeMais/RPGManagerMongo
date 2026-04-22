@@ -1,7 +1,10 @@
 package dao;
 
 import contracts.CharacterSheetDAO;
+import contracts.CharacterSheetSkillDAO;
 import model.CharacterSheet;
+import model.relationship.CharacterSheetSkill;
+import model.relationship.ItemAttribute;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,9 +17,10 @@ import java.util.List;
 
 public class CharacterSheetSqlDAO implements CharacterSheetDAO {
     private final Connection connection;
-
+    private final CharacterSheetSkillDAO characterSheetSkillDAO;
     public CharacterSheetSqlDAO(Connection connection) {
         this.connection = connection;
+        this.characterSheetSkillDAO = new CharacterSheetSkillSqlDAO(connection);
     }
 
     @Override
@@ -39,7 +43,7 @@ public class CharacterSheetSqlDAO implements CharacterSheetDAO {
         st.executeUpdate();
 
         ResultSet generatedKeys = st.getGeneratedKeys();
-        if (generatedKeys.next()) {
+        if (!generatedKeys.next()) {
             int id = generatedKeys.getInt(1);
             generatedKeys.close();
             st.close();
@@ -53,31 +57,55 @@ public class CharacterSheetSqlDAO implements CharacterSheetDAO {
 
     @Override
     public void update(CharacterSheet characterSheet) throws SQLException {
-        PreparedStatement st = connection.prepareStatement(
-                "UPDATE ficha SET id_classe = ?, id_especie = ?, pontos_vida_max = ?, pontos_mana_max = ?, forca = ?, destreza = ?, constituicao = ?, inteligencia = ?, sabedoria = ?, carisma = ?, nivel = ? WHERE id_ficha = ?"
-        );
-        setNullableInteger(st, 1, characterSheet.getClassId());
-        setNullableInteger(st, 2, characterSheet.getSpeciesId());
-        st.setInt(3, characterSheet.getMaxHitPoints());
-        st.setInt(4, characterSheet.getMaxManaPoints());
-        st.setInt(5, characterSheet.getStrength());
-        st.setInt(6, characterSheet.getDexterity());
-        st.setInt(7, characterSheet.getConstitution());
-        st.setInt(8, characterSheet.getIntelligence());
-        st.setInt(9, characterSheet.getWisdom());
-        st.setInt(10, characterSheet.getCharisma());
-        st.setInt(11, characterSheet.getLevel());
-        st.setInt(12, characterSheet.getId());
-        st.executeUpdate();
-        st.close();
+        boolean autoCommit = connection.getAutoCommit();
+        connection.setAutoCommit(false);
+        try {
+            PreparedStatement st = connection.prepareStatement(
+                    "UPDATE ficha SET id_classe = ?, id_especie = ?, pontos_vida_max = ?, pontos_mana_max = ?, forca = ?, destreza = ?, constituicao = ?, inteligencia = ?, sabedoria = ?, carisma = ?, nivel = ? WHERE id_ficha = ?"
+            );
+            setNullableInteger(st, 1, characterSheet.getClassId());
+            setNullableInteger(st, 2, characterSheet.getSpeciesId());
+            st.setInt(3, characterSheet.getMaxHitPoints());
+            st.setInt(4, characterSheet.getMaxManaPoints());
+            st.setInt(5, characterSheet.getStrength());
+            st.setInt(6, characterSheet.getDexterity());
+            st.setInt(7, characterSheet.getConstitution());
+            st.setInt(8, characterSheet.getIntelligence());
+            st.setInt(9, characterSheet.getWisdom());
+            st.setInt(10, characterSheet.getCharisma());
+            st.setInt(11, characterSheet.getLevel());
+            st.setInt(12, characterSheet.getId());
+            st.executeUpdate();
+            st.close();
+
+            characterSheetSkillDAO.removeBySheetId(characterSheet.getId());
+            persistSkills(characterSheet.getId(), characterSheet.getSkills());
+            connection.commit();
+        }catch (SQLException err) {
+            connection.rollback();
+            throw err;
+        } finally {
+            connection.setAutoCommit(autoCommit);
+        }
     }
 
     @Override
     public void remove(Integer characterSheetId) throws SQLException {
-        PreparedStatement st = connection.prepareStatement("DELETE FROM ficha WHERE id_ficha = ?");
-        st.setInt(1, characterSheetId);
-        st.execute();
-        st.close();
+        boolean autoCommit = connection.getAutoCommit();
+        connection.setAutoCommit(false);
+        try{
+            characterSheetSkillDAO.removeBySheetId(characterSheetId);
+            PreparedStatement st = connection.prepareStatement("DELETE FROM ficha WHERE id_ficha = ?");
+            st.setInt(1, characterSheetId);
+            st.execute();
+            st.close();
+            connection.commit();
+        }catch (SQLException err) {
+            connection.rollback();
+            throw err;
+        } finally {
+            connection.setAutoCommit(autoCommit);
+        }
     }
 
     @Override
@@ -89,7 +117,9 @@ public class CharacterSheetSqlDAO implements CharacterSheetDAO {
         st.setInt(1, characterSheetId);
         ResultSet result = st.executeQuery();
         while (result.next()) {
-            list.add(CharacterSheet.fromResultSet(result));
+            CharacterSheet characterSheet = CharacterSheet.fromResultSet(result);
+            characterSheet.setSkills(characterSheetSkillDAO.findBySheetId(characterSheet.getId()));
+            list.add(characterSheet);
         }
         st.close();
         if (!list.isEmpty()) {
@@ -106,10 +136,26 @@ public class CharacterSheetSqlDAO implements CharacterSheetDAO {
                 "SELECT id_ficha, id_classe, id_especie, pontos_vida_max, pontos_mana_max, forca, destreza, constituicao, inteligencia, sabedoria, carisma, nivel FROM ficha"
         );
         while (result.next()) {
-            list.add(CharacterSheet.fromResultSet(result));
+            CharacterSheet characterSheet = CharacterSheet.fromResultSet(result);
+            characterSheet.setSkills(characterSheetSkillDAO.findBySheetId(characterSheet.getId()));
+            list.add(characterSheet);
         }
         st.close();
         return list;
+    }
+
+    private void persistSkills(Integer sheetId, List<CharacterSheetSkill> skills) throws SQLException {
+        if (skills == null) {
+            return;
+        }
+        for (CharacterSheetSkill skill : skills) {
+            characterSheetSkillDAO.insert(new CharacterSheetSkill(
+                    sheetId,
+                    skill.getSkillId(),
+                    skill.getValue(),
+                    skill.getSkill()
+            ));
+        }
     }
 
     private void setNullableInteger(PreparedStatement st, int parameterIndex, Integer value) throws SQLException {

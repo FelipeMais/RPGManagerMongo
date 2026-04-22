@@ -18,11 +18,12 @@ import util.UI;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
+import static util.Colors.*;
 
 public class CharacterService extends MenuService {
     private final CharacterDAO characterDAO;
@@ -154,7 +155,7 @@ public class CharacterService extends MenuService {
                 System.out.println("Personagem nao encontrado");
                 return false;
             }
-            print(Collections.singletonList(character));
+            detail(character);
             UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar personagem!");
@@ -223,6 +224,50 @@ public class CharacterService extends MenuService {
         }
 
         UI.printTable(headers, widths, rows);
+    }
+
+    private void detail(Character character) throws SQLException {
+        int width = 50;
+        CharacterSheet sheet = characterSheetDAO.findById(character.getSheetId());
+        Player player = character.getPlayerId() != null ? playerDAO.findById(character.getPlayerId()) : null;
+        Location loc = character.getCurrentLocationId() != null ? locationDAO.findById(character.getCurrentLocationId()) : null;
+        RpgClass rClass = (sheet != null && sheet.getClassId() != null) ? rpgClassDAO.findById(sheet.getClassId()) : null;
+        Species spec = (sheet != null && sheet.getSpeciesId() != null) ? speciesDAO.findById(sheet.getSpeciesId()) : null;
+
+        System.out.println("\n" + CYAN + "╔" + "═".repeat(width + 2) + "╗" + RESET);
+
+        UI.printRow(GRAY + (player != null ? player.getName() : "NPC"), width);
+        UI.printRow(BOLD.toString() + character.getName().toUpperCase() + GRAY + " (Lv. " + (sheet != null ? sheet.getLevel() : 0) + ")", width);
+        UI.printRow(BLUE.toString() + (rClass != null ? rClass.getClassName() : "Sem classe") + " " + GREEN + (spec != null ? spec.getName() : "Desconhecido"), width);
+
+        System.out.println(CYAN + "╠" + "═".repeat(width + 2) + "╣");
+
+        UI.printRow(RED + "HP: " + character.getHitPoints() + "/" + (sheet != null ? sheet.getMaxHitPoints() : 0) + " | " +
+                BLUE + "MP: " + character.getManaPoints() + "/" + (sheet != null ? sheet.getMaxManaPoints() : 0), width);
+        UI.printRow(BOLD + "LOCALIZAÇÃO ATUAL: " + RESET + (loc != null ? loc.getName() : "Desconhecido"), width);
+
+        System.out.println(CYAN + "╟" + "─".repeat(width + 2) + "╢");
+
+        UI.printRow(BOLD + "[ ATRIBUTOS ]", width);
+        if (sheet != null) {
+            UI.printRow(YELLOW + " FOR: " + RESET + String.format("%-4d", sheet.getStrength()) + YELLOW + "INT: " + RESET + sheet.getIntelligence(), width);
+            UI.printRow(YELLOW + " DEX: " + RESET + String.format("%-4d", sheet.getDexterity()) + YELLOW + "SAB: " + RESET + sheet.getWisdom(), width);
+            UI.printRow(YELLOW + " CON: " + RESET + String.format("%-4d", sheet.getConstitution()) + YELLOW + "CAR: " + RESET + sheet.getCharisma(), width);
+        }
+
+        System.out.println(CYAN + "╠" + "═".repeat(width + 2) + "╝" + RESET);
+
+        UI.printRow(BOLD + "[ HISTÓRIA ]" + RESET, width);
+        String history = (character.getHistory() != null) ? character.getHistory() : "A história deste personagem é desconhecida...";
+        while (history.length() > width) {
+            int cut = history.lastIndexOf(' ', width);
+            if (cut == -1) cut = width;
+            UI.printRow(GRAY + history.substring(0, cut).trim() + RESET, width);
+            history = history.substring(cut).trim();
+        }
+        UI.printRow(GRAY + history + RESET, width);
+
+        System.out.println(CYAN + "╚" + "═".repeat(width + 2) + "╝" + RESET + "\n");
     }
 
     private Map<Integer, Player> mapPlayersById(List<Player> players) {

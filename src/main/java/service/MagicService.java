@@ -15,6 +15,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
+import static util.UI.printRow;
+import static util.Colors.*;
+
 public class MagicService extends MenuService {
     private final AttributeDAO attributeDAO;
     private final MagicDAO magicDAO;
@@ -156,7 +159,7 @@ public class MagicService extends MenuService {
                 System.out.println("Magia nao encontrada");
                 return false;
             }
-            print(Collections.singletonList(magia));
+            detail(magia);
             UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar magia!");
@@ -193,6 +196,48 @@ public class MagicService extends MenuService {
         }
 
         UI.printTable(headers, widths, rows);
+    }
+
+    private void detail(Magic magic) {
+        String RESET = "\u001B[0m", BOLD = "\u001B[1m", PURPLE = "\u001B[35m",
+                CYAN = "\u001B[36m", GRAY = "\u001B[90m", YEL = "\u001B[33m";
+        int width = 50;
+
+        System.out.println("\n" + CYAN + "╔" + "═".repeat(width + 2) + "╗" + RESET);
+        printRow(BOLD + PURPLE + magic.getName().toUpperCase() + RESET + GRAY + " [ #" + magic.getId() + "]" + RESET, width);
+        System.out.println(CYAN + "╠" + "═".repeat(width + 2) + "╣" + RESET);
+
+        printRow(BOLD + "CUSTO: " + RESET + BLUE + magic.getManaCost() + " MP" + RESET + " | " +
+                BOLD + "REQ: " + RESET + "Lv. " + magic.getMinLevel(), width);
+        printRow(BOLD + "PODER: " + RESET + YEL + (magic.getDices().isEmpty() ? "-" : magic.getDices()) + RESET, width);
+
+        System.out.println(CYAN + "╟" + "─".repeat(width + 2) + "╢" + RESET);
+
+        printRow(BOLD + "[ ATRIBUTOS ]" + RESET, width);
+        if (magic.getAttributes() != null && !magic.getAttributes().isEmpty()) {
+            for (var attr : magic.getAttributes()) {
+                String name = attr.getAttribute() != null ? attr.getAttribute().getName() : "Attr #" + attr.getAttributeId();
+                String bonus = (attr.getValue() != 0) ? ": " + (attr.getValue() > 0 ? "+" : "") + attr.getValue() : " (Intrinsic)";
+                printRow(" • " + name + bonus, width);
+            }
+        } else {
+            printRow(GRAY + "  Nenhum atributo adicional." + RESET, width);
+        }
+
+        System.out.println(CYAN + "╟" + "─".repeat(width + 2) + "╢" + RESET);
+
+        if (magic.getDescription() != null && !magic.getDescription().isBlank()) {
+            String desc = magic.getDescription();
+            while (desc.length() > width) {
+                int cut = desc.lastIndexOf(' ', width);
+                if (cut == -1) cut = width;
+                printRow(GRAY + desc.substring(0, cut).trim() + RESET, width);
+                desc = desc.substring(cut).trim();
+            }
+            printRow(GRAY + desc + RESET, width);
+        }
+
+        System.out.println(CYAN + "╚" + "═".repeat(width + 2) + "╝" + RESET + "\n");
     }
 
     private String formatAttributes(List<MagicAttribute> attributes) {
