@@ -20,13 +20,14 @@ public class CharacterSheet {
     private Integer wisdom;
     private Integer charisma;
     private Integer level;
-    private List<CharacterSheetSkill> skills;
+    private List<Magic> knownMagics;
+    private List<Ability> knownAbilities;
 
-    public CharacterSheet(Integer classId, Integer speciesId, Integer maxHitPoints, Integer maxManaPoints, Integer strength, Integer dexterity, Integer constitution, Integer intelligence, Integer wisdom, Integer charisma, Integer level, List<CharacterSheetSkill> skills) {
-        this(null, classId, speciesId, maxHitPoints, maxManaPoints, strength, dexterity, constitution, intelligence, wisdom, charisma, level, skills);
+    public CharacterSheet(Integer classId, Integer speciesId, Integer maxHitPoints, Integer maxManaPoints, Integer strength, Integer dexterity, Integer constitution, Integer intelligence, Integer wisdom, Integer charisma, Integer level, List<Magic> knownMagics, List<Ability> knownAbilities) {
+        this(null, classId, speciesId, maxHitPoints, maxManaPoints, strength, dexterity, constitution, intelligence, wisdom, charisma, level, knownMagics, knownAbilities);
     }
 
-    public CharacterSheet(Integer id, Integer classId, Integer speciesId, Integer maxHitPoints, Integer maxManaPoints, Integer strength, Integer dexterity, Integer constitution, Integer intelligence, Integer wisdom, Integer charisma, Integer level, List<CharacterSheetSkill> skills) {
+    public CharacterSheet(Integer id, Integer classId, Integer speciesId, Integer maxHitPoints, Integer maxManaPoints, Integer strength, Integer dexterity, Integer constitution, Integer intelligence, Integer wisdom, Integer charisma, Integer level, List<Magic> knownMagics, List<Ability> knownAbilities) {
         this.id = id;
         this.classId = classId;
         this.speciesId = speciesId;
@@ -39,7 +40,8 @@ public class CharacterSheet {
         this.wisdom = wisdom;
         this.charisma = charisma;
         this.level = level;
-        this.skills = skills;
+        this.knownMagics = knownMagics != null ? knownMagics : new ArrayList<>();
+        this.knownAbilities = knownAbilities != null ? knownAbilities : new ArrayList<>();
     }
 
     public static CharacterSheet fromResultSet(ResultSet result) throws SQLException {
@@ -66,6 +68,7 @@ public class CharacterSheet {
                 result.getInt(10),
                 result.getInt(11),
                 result.getInt(12),
+                new ArrayList<>(),
                 new ArrayList<>()
         );
     }
@@ -118,11 +121,19 @@ public class CharacterSheet {
         return level;
     }
 
-    public List<CharacterSheetSkill> getSkills() {
-        return skills;
+    public List<Magic> getKnownMagics() {
+        return knownMagics;
     }
 
-    public void setSkills(List<CharacterSheetSkill> skills) {
-        this.skills = skills;
+    public void setKnownMagics(List<Magic> knownMagics) {
+        this.knownMagics = knownMagics != null ? knownMagics : new ArrayList<>();
+    }
+
+    public List<Ability> getKnownAbilities() {
+        return knownAbilities;
+    }
+
+    public void setKnownAbilities(List<Ability> knownAbilities) {
+        this.knownAbilities = knownAbilities != null ? knownAbilities : new ArrayList<>();
     }
 }

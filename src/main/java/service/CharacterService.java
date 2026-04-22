@@ -2,17 +2,23 @@ package service;
 
 import contracts.CharacterSheetDAO;
 import contracts.CharacterDAO;
+import contracts.InventoryDAO;
+import contracts.ItemDAO;
 import contracts.LocationDAO;
 import contracts.PlayerDAO;
 import contracts.RpgClassDAO;
 import contracts.SpeciesDAO;
 import factory.DaoFactory;
+import model.Ability;
 import model.Character;
 import model.CharacterSheet;
+import model.Item;
 import model.Location;
+import model.Magic;
 import model.Player;
 import model.RpgClass;
 import model.Species;
+import model.relationship.InventoryItem;
 import util.Option;
 import util.UI;
 
@@ -28,6 +34,8 @@ import static util.Colors.*;
 public class CharacterService extends MenuService {
     private final CharacterDAO characterDAO;
     private final CharacterSheetDAO characterSheetDAO;
+    private final InventoryDAO inventoryDAO;
+    private final ItemDAO itemDAO;
     private final PlayerDAO playerDAO;
     private final LocationDAO locationDAO;
     private final RpgClassDAO rpgClassDAO;
@@ -37,6 +45,8 @@ public class CharacterService extends MenuService {
     public CharacterService() throws SQLException {
         this.characterDAO = DaoFactory.getCharacterDAO();
         this.characterSheetDAO = DaoFactory.getCharacterSheetDAO();
+        this.inventoryDAO = DaoFactory.getInventoryDAO();
+        this.itemDAO = DaoFactory.getItemDAO();
         this.playerDAO = DaoFactory.getPlayerDAO();
         this.locationDAO = DaoFactory.getLocationDAO();
         this.rpgClassDAO = DaoFactory.getRpgClassDAO();
@@ -54,7 +64,8 @@ public class CharacterService extends MenuService {
     private Boolean create() {
         try {
             Character newCharacter = instantiateCharacter(false);
-            characterDAO.insert(newCharacter);
+            Integer generatedId = characterDAO.insert(newCharacter);
+            System.out.println("Personagem criado com ID: " + generatedId);
         } catch (Exception err) {
             System.out.println("Erro ao criar novo personagem!");
         }
@@ -65,6 +76,7 @@ public class CharacterService extends MenuService {
         try {
             Character updatedCharacter = instantiateCharacter(true);
             characterDAO.update(updatedCharacter);
+            manageInventoryUpdate(updatedCharacter.getId());
         } catch (Exception err) {
             System.out.println("Erro ao atualizar personagem!");
         }
@@ -104,10 +116,14 @@ public class CharacterService extends MenuService {
         System.out.print("Digite a historia do personagem (vazio para nenhuma): ");
         String history = normalizeNullableText(scanner.nextLine());
 
+        List<InventoryItem> inventory = askId
+                ? new ArrayList<>()
+                : collectInventoryItems(scanner, null);
+
         if (askId) {
-            return new Character(id, playerId, sheetId, currentLocationId, name, hitPoints, manaPoints, history);
+            return new Character(id, playerId, sheetId, currentLocationId, name, hitPoints, manaPoints, history, inventory);
         }
-        return new Character(playerId, sheetId, currentLocationId, name, hitPoints, manaPoints, history);
+        return new Character(playerId, sheetId, currentLocationId, name, hitPoints, manaPoints, history, inventory);
     }
 
     private Integer resolveSheetIdForCreation(Scanner scanner) throws SQLException {
@@ -184,8 +200,9 @@ public class CharacterService extends MenuService {
     }
 
     private void print(List<Character> characterList) {
-        String[] headers = {"ID", "NOME", "JOGADOR", "LOCAL", "CLASSE", "ESPECIE", "NIVEL", "PV", "PM", "PV MAX", "PM MAX", "FOR", "DES", "CON", "INT", "SAB", "CAR", "HISTORIA"};
-        int[] widths = {4, 18, 16, 16, 14, 14, 5, 4, 4, 6, 6, 3, 3, 3, 3, 3, 3, 20};
+        String[] headers;
+        int[] widths = {4, 18, 16, 16, 14, 14, 5, 4, 4, 6, 6, 3, 3, 3, 3, 3, 3, 24, 24, 28, 18};
+        headers = new String[]{"ID", "NOME", "JOGADOR", "LOCAL", "CLASSE", "ESPECIE", "NIVEL", "PV", "PM", "PV MAX", "PM MAX", "FOR", "DES", "CON", "INT", "SAB", "CAR", "MAGIAS", "HABILIDADES", "INVENTARIO", "HISTORIA"};
         List<String[]> rows = new ArrayList<>();
 
         try {
@@ -216,6 +233,9 @@ public class CharacterService extends MenuService {
                         resolveAttribute(characterSheet, "INT"),
                         resolveAttribute(characterSheet, "SAB"),
                         resolveAttribute(characterSheet, "CAR"),
+                        formatKnownMagics(characterSheet),
+                        formatKnownAbilities(characterSheet),
+                        formatInventory(character),
                         character.getHistory()
                 });
             }
@@ -395,6 +415,45 @@ public class CharacterService extends MenuService {
         };
     }
 
+    private String formatKnownMagics(CharacterSheet characterSheet) {
+        if (characterSheet == null || characterSheet.getKnownMagics() == null || characterSheet.getKnownMagics().isEmpty()) {
+            return "-";
+        }
+
+        List<String> magicNames = new ArrayList<>();
+        for (Magic magic : characterSheet.getKnownMagics()) {
+            magicNames.add(magic.getName());
+        }
+        return String.join(", ", magicNames);
+    }
+
+    private String formatKnownAbilities(CharacterSheet characterSheet) {
+        if (characterSheet == null || characterSheet.getKnownAbilities() == null || characterSheet.getKnownAbilities().isEmpty()) {
+            return "-";
+        }
+
+        List<String> abilityNames = new ArrayList<>();
+        for (Ability ability : characterSheet.getKnownAbilities()) {
+            abilityNames.add(ability.getName());
+        }
+        return String.join(", ", abilityNames);
+    }
+
+    private String formatInventory(Character character) {
+        if (character.getInventory() == null || character.getInventory().isEmpty()) {
+            return "-";
+        }
+
+        List<String> inventoryEntries = new ArrayList<>();
+        for (InventoryItem inventoryItem : character.getInventory()) {
+            String itemName = inventoryItem.getItem() != null
+                    ? inventoryItem.getItem().getName()
+                    : "Item #" + inventoryItem.getItemId();
+            inventoryEntries.add(itemName + "(x" + inventoryItem.getQuantity() + ")");
+        }
+        return String.join(", ", inventoryEntries);
+    }
+
     private Integer normalizeNullableId(Integer value) {
         if (value != null && value == 0) {
             return null;
@@ -533,6 +592,18 @@ public class CharacterService extends MenuService {
         UI.printTable(headers, widths, rows);
     }
 
+    private void showAvailableItems() throws SQLException {
+        String[] headers = {"ID", "NOME"};
+        int[] widths = {4, 24};
+        List<String[]> rows = new ArrayList<>();
+
+        for (Item item : itemDAO.listAll()) {
+            rows.add(new String[]{String.valueOf(item.getId()), item.getName()});
+        }
+
+        UI.printTable(headers, widths, rows);
+    }
+
     private void showAvailableSheets() throws SQLException {
         String[] headers = {"ID", "CLASSE", "ESPECIE", "NIVEL"};
         int[] widths = {4, 8, 8, 5};
@@ -545,6 +616,176 @@ public class CharacterService extends MenuService {
                     printableNullable(sheet.getSpeciesId()),
                     String.valueOf(sheet.getLevel())
             });
+        }
+
+        UI.printTable(headers, widths, rows);
+    }
+
+    private List<InventoryItem> collectInventoryItems(Scanner scanner, Integer characterId) throws SQLException {
+        List<InventoryItem> inventoryItems = new ArrayList<>();
+        System.out.print("Deseja adicionar itens ao inventario do personagem? [S]/[N]: ");
+        String addItems = scanner.nextLine();
+        if (!addItems.equalsIgnoreCase("S")) {
+            return inventoryItems;
+        }
+
+        while (true) {
+            showAvailableItems();
+            System.out.print("Id do item para adicionar ao inventario (0 para encerrar): ");
+            Integer itemId = scanner.nextInt();
+            scanner.nextLine();
+
+            if (itemId == 0) {
+                return inventoryItems;
+            }
+
+            Item item = itemDAO.findById(itemId);
+            if (item == null) {
+                System.out.println("Item informado nao existe.");
+                continue;
+            }
+
+            System.out.print("Quantidade do item: ");
+            Integer quantity = scanner.nextInt();
+            scanner.nextLine();
+
+            if (quantity <= 0) {
+                System.out.println("A quantidade deve ser maior que zero.");
+                continue;
+            }
+
+            InventoryItem existingItem = findInventoryItem(inventoryItems, itemId);
+            if (existingItem != null) {
+                inventoryItems.remove(existingItem);
+                inventoryItems.add(new InventoryItem(itemId, characterId, existingItem.getQuantity() + quantity, item));
+                continue;
+            }
+
+            inventoryItems.add(new InventoryItem(itemId, characterId, quantity, item));
+        }
+    }
+
+    private InventoryItem findInventoryItem(List<InventoryItem> inventoryItems, Integer itemId) {
+        for (InventoryItem inventoryItem : inventoryItems) {
+            if (inventoryItem.getItemId().equals(itemId)) {
+                return inventoryItem;
+            }
+        }
+        return null;
+    }
+
+    private void manageInventoryUpdate(Integer characterId) throws SQLException {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            Character character = characterDAO.findById(characterId);
+            if (character == null) {
+                return;
+            }
+
+            showCurrentInventory(character);
+            System.out.println("[0]: FINALIZAR ALTERACOES DE INVENTARIO");
+            System.out.println("[1]: ADICIONAR ITEM");
+            System.out.println("[2]: REMOVER ITEM");
+            System.out.print("Escolha uma opcao: ");
+            Integer option = scanner.nextInt();
+            scanner.nextLine();
+
+            if (option == 0) {
+                return;
+            }
+
+            if (option == 1) {
+                addInventoryItem(characterId, scanner);
+                continue;
+            }
+
+            if (option == 2) {
+                removeInventoryItem(character, scanner);
+                continue;
+            }
+
+            System.out.println("Opcao invalida.");
+        }
+    }
+
+    private void addInventoryItem(Integer characterId, Scanner scanner) throws SQLException {
+        showAvailableItems();
+
+        while (true) {
+            System.out.print("Digite o ID do item para adicionar: ");
+            Integer itemId = scanner.nextInt();
+            scanner.nextLine();
+
+            Item item = itemDAO.findById(itemId);
+            if (item == null) {
+                System.out.println("Item informado nao existe.");
+                continue;
+            }
+
+            System.out.print("Quantidade para adicionar: ");
+            Integer quantity = scanner.nextInt();
+            scanner.nextLine();
+
+            if (quantity <= 0) {
+                System.out.println("A quantidade deve ser maior que zero.");
+                continue;
+            }
+
+            InventoryItem currentInventoryItem = inventoryDAO.findByCharacterIdAndItemId(characterId, itemId);
+            if (currentInventoryItem == null) {
+                inventoryDAO.insert(new InventoryItem(itemId, characterId, quantity, item));
+            } else {
+                inventoryDAO.update(new InventoryItem(
+                        itemId,
+                        characterId,
+                        currentInventoryItem.getQuantity() + quantity,
+                        currentInventoryItem.getItem()
+                ));
+            }
+
+            System.out.println("Item adicionado ao inventario.");
+            return;
+        }
+    }
+
+    private void removeInventoryItem(Character character, Scanner scanner) throws SQLException {
+        if (character.getInventory() == null || character.getInventory().isEmpty()) {
+            System.out.println("O personagem nao possui itens no inventario.");
+            return;
+        }
+
+        while (true) {
+            showCurrentInventory(character);
+            System.out.print("Digite o ID do item para remover do inventario: ");
+            Integer itemId = scanner.nextInt();
+            scanner.nextLine();
+
+            InventoryItem inventoryItem = findInventoryItem(character.getInventory(), itemId);
+            if (inventoryItem == null) {
+                System.out.println("Item informado nao esta no inventario do personagem.");
+                continue;
+            }
+
+            inventoryDAO.remove(character.getId(), itemId);
+            System.out.println("Item removido do inventario.");
+            return;
+        }
+    }
+
+    private void showCurrentInventory(Character character) {
+        String[] headers = {"ID ITEM", "NOME", "QTD"};
+        int[] widths = {7, 24, 5};
+        List<String[]> rows = new ArrayList<>();
+
+        if (character.getInventory() != null) {
+            for (InventoryItem inventoryItem : character.getInventory()) {
+                rows.add(new String[]{
+                        String.valueOf(inventoryItem.getItemId()),
+                        inventoryItem.getItem() != null ? inventoryItem.getItem().getName() : "Item #" + inventoryItem.getItemId(),
+                        String.valueOf(inventoryItem.getQuantity())
+                });
+            }
         }
 
         UI.printTable(headers, widths, rows);

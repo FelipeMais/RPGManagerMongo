@@ -1,10 +1,14 @@
 package service;
 
+import contracts.AbilityDAO;
 import contracts.CharacterSheetDAO;
+import contracts.MagicDAO;
 import contracts.RpgClassDAO;
 import contracts.SpeciesDAO;
 import factory.DaoFactory;
+import model.Ability;
 import model.CharacterSheet;
+import model.Magic;
 import model.RpgClass;
 import model.Species;
 import util.Option;
@@ -17,12 +21,16 @@ import java.util.List;
 import java.util.Scanner;
 
 public class CharacterSheetService extends MenuService {
+    private final AbilityDAO abilityDAO;
     private final CharacterSheetDAO characterSheetDAO;
+    private final MagicDAO magicDAO;
     private final RpgClassDAO rpgClassDAO;
     private final SpeciesDAO speciesDAO;
 
     public CharacterSheetService() throws SQLException {
+        this.abilityDAO = DaoFactory.getAbilityDAO();
         this.characterSheetDAO = DaoFactory.getCharacterSheetDAO();
+        this.magicDAO = DaoFactory.getMagicDAO();
         this.rpgClassDAO = DaoFactory.getRpgClassDAO();
         this.speciesDAO = DaoFactory.getSpeciesDAO();
         this.menuTitle = "GERENCIAR FICHAS";
@@ -101,12 +109,15 @@ public class CharacterSheetService extends MenuService {
 
         System.out.print("Nivel: ");
         Integer level = scanner.nextInt();
+        scanner.nextLine();
+
+        List<Magic> knownMagics = collectKnownMagics(scanner);
+        List<Ability> knownAbilities = collectKnownAbilities(scanner);
 
         if (askId) {
-            return new CharacterSheet(id, classId, speciesId, maxHitPoints, maxManaPoints, strength, dexterity, constitution, intelligence, wisdom, charisma, level);
+            return new CharacterSheet(id, classId, speciesId, maxHitPoints, maxManaPoints, strength, dexterity, constitution, intelligence, wisdom, charisma, level, knownMagics, knownAbilities);
         }
-        //TO DO: arrumar skill e magia conhecida
-        return new CharacterSheet(classId, speciesId, maxHitPoints, maxManaPoints, strength, dexterity, constitution, intelligence, wisdom, charisma, level, null);
+        return new CharacterSheet(classId, speciesId, maxHitPoints, maxManaPoints, strength, dexterity, constitution, intelligence, wisdom, charisma, level, knownMagics, knownAbilities);
     }
 
     private Boolean remove() {
@@ -151,8 +162,8 @@ public class CharacterSheetService extends MenuService {
     }
 
     private void print(List<CharacterSheet> characterSheets) {
-        String[] headers = {"ID", "CLASSE", "ESPECIE", "NIVEL", "PV MAX", "PM MAX", "FOR", "DES", "CON", "INT", "SAB", "CAR"};
-        int[] widths = {4, 6, 7, 5, 6, 6, 3, 3, 3, 3, 3, 3};
+        String[] headers = {"ID", "CLASSE", "ESPECIE", "NIVEL", "PV MAX", "PM MAX", "FOR", "DES", "CON", "INT", "SAB", "CAR", "MAGIAS", "HABILIDADES"};
+        int[] widths = {4, 6, 7, 5, 6, 6, 3, 3, 3, 3, 3, 3, 24, 24};
         List<String[]> rows = new ArrayList<>();
 
         for (CharacterSheet characterSheet : characterSheets) {
@@ -168,7 +179,9 @@ public class CharacterSheetService extends MenuService {
                     String.valueOf(characterSheet.getConstitution()),
                     String.valueOf(characterSheet.getIntelligence()),
                     String.valueOf(characterSheet.getWisdom()),
-                    String.valueOf(characterSheet.getCharisma())
+                    String.valueOf(characterSheet.getCharisma()),
+                    formatKnownMagics(characterSheet.getKnownMagics()),
+                    formatKnownAbilities(characterSheet.getKnownAbilities())
             });
         }
 
@@ -259,5 +272,155 @@ public class CharacterSheetService extends MenuService {
         }
 
         UI.printTable(headers, widths, rows);
+    }
+
+    private List<Magic> collectKnownMagics(Scanner scanner) {
+        List<Magic> knownMagics = new ArrayList<>();
+        System.out.print("Deseja adicionar magias conhecidas a ficha? [S]/[N]: ");
+        String addKnownMagics = scanner.nextLine();
+        if (!addKnownMagics.equalsIgnoreCase("S")) {
+            return knownMagics;
+        }
+
+        while (true) {
+            try {
+                showAvailableMagics();
+                System.out.print("Id da magia conhecida (0 para encerrar): ");
+                Integer magicId = scanner.nextInt();
+                scanner.nextLine();
+
+                if (magicId == 0) {
+                    return knownMagics;
+                }
+
+                Magic magic = magicDAO.findById(magicId);
+                if (magic == null) {
+                    System.out.println("Magia informada nao existe.");
+                    continue;
+                }
+
+                if (containsMagic(knownMagics, magicId)) {
+                    System.out.println("Magia ja adicionada para esta ficha.");
+                    continue;
+                }
+
+                knownMagics.add(magic);
+            } catch (SQLException err) {
+                throw new RuntimeException("Erro ao listar magias.", err);
+            }
+        }
+    }
+
+    private boolean containsMagic(List<Magic> knownMagics, Integer magicId) {
+        for (Magic magic : knownMagics) {
+            if (magic.getId().equals(magicId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void showAvailableMagics() throws SQLException {
+        List<Magic> magicList = magicDAO.listAll();
+        String[] headers = {"ID", "NOME", "NIVEL"};
+        int[] widths = {4, 24, 5};
+        List<String[]> rows = new ArrayList<>();
+
+        for (Magic magic : magicList) {
+            rows.add(new String[]{
+                    String.valueOf(magic.getId()),
+                    magic.getName(),
+                    String.valueOf(magic.getMinLevel())
+            });
+        }
+
+        UI.printTable(headers, widths, rows);
+    }
+
+    private String formatKnownMagics(List<Magic> knownMagics) {
+        if (knownMagics == null || knownMagics.isEmpty()) {
+            return "-";
+        }
+
+        List<String> names = new ArrayList<>();
+        for (Magic magic : knownMagics) {
+            names.add(magic.getName());
+        }
+        return String.join(", ", names);
+    }
+
+    private List<Ability> collectKnownAbilities(Scanner scanner) {
+        List<Ability> knownAbilities = new ArrayList<>();
+        System.out.print("Deseja adicionar habilidades a ficha? [S]/[N]: ");
+        String addKnownAbilities = scanner.nextLine();
+        if (!addKnownAbilities.equalsIgnoreCase("S")) {
+            return knownAbilities;
+        }
+
+        while (true) {
+            try {
+                showAvailableAbilities();
+                System.out.print("Id da habilidade da ficha (0 para encerrar): ");
+                Integer abilityId = scanner.nextInt();
+                scanner.nextLine();
+
+                if (abilityId == 0) {
+                    return knownAbilities;
+                }
+
+                Ability ability = abilityDAO.findById(abilityId);
+                if (ability == null) {
+                    System.out.println("Habilidade informada nao existe.");
+                    continue;
+                }
+
+                if (containsAbility(knownAbilities, abilityId)) {
+                    System.out.println("Habilidade ja adicionada para esta ficha.");
+                    continue;
+                }
+
+                knownAbilities.add(ability);
+            } catch (SQLException err) {
+                throw new RuntimeException("Erro ao listar habilidades.", err);
+            }
+        }
+    }
+
+    private boolean containsAbility(List<Ability> knownAbilities, Integer abilityId) {
+        for (Ability ability : knownAbilities) {
+            if (ability.getId().equals(abilityId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void showAvailableAbilities() throws SQLException {
+        List<Ability> abilityList = abilityDAO.listAll();
+        String[] headers = {"ID", "NOME", "ATRIBUTO"};
+        int[] widths = {4, 24, 12};
+        List<String[]> rows = new ArrayList<>();
+
+        for (Ability ability : abilityList) {
+            rows.add(new String[]{
+                    String.valueOf(ability.getId()),
+                    ability.getName(),
+                    ability.getBaseAttribute()
+            });
+        }
+
+        UI.printTable(headers, widths, rows);
+    }
+
+    private String formatKnownAbilities(List<Ability> knownAbilities) {
+        if (knownAbilities == null || knownAbilities.isEmpty()) {
+            return "-";
+        }
+
+        List<String> names = new ArrayList<>();
+        for (Ability ability : knownAbilities) {
+            names.add(ability.getName());
+        }
+        return String.join(", ", names);
     }
 }

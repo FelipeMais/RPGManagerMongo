@@ -10,6 +10,8 @@ public class MainMenuService extends MenuService {
     private final MagicService magicService;
     private final PlayerService playerService;
     private final AttributeService attributeService;
+    private final AbilityService abilityService;
+    private final CombatService combatService;
     private final RpgClassService rpgClassService;
     private final SpeciesService speciesService;
     private final CharacterService characterService;
@@ -20,6 +22,8 @@ public class MainMenuService extends MenuService {
         this.magicService = new MagicService();
         this.playerService = new PlayerService();
         this.attributeService = new AttributeService();
+        this.abilityService = new AbilityService();
+        this.combatService = new CombatService();
         this.rpgClassService = new RpgClassService();
         this.speciesService = new SpeciesService();
         this.characterService = new CharacterService();
@@ -32,6 +36,8 @@ public class MainMenuService extends MenuService {
         this.menuOptions.add(new Option(6, "GERENCIAR LOCAIS", this::executarGerenciamentoLocais));
         this.menuOptions.add(new Option(7, "GERENCIAR ATRIBUTOS", this::executarGerenciamentoAtributos));
         this.menuOptions.add(new Option(8, "GERENCIAR PERSONAGENS", this::executarGerenciamentoPersonagens));
+        this.menuOptions.add(new Option(9, "GERENCIAR HABILIDADES", this::executarGerenciamentoHabilidades));
+        this.menuOptions.add(new Option(10, "GERENCIAR COMBATE", this::executarGerenciamentoCombate));
     }
 
     private Boolean executarGerenciamentoMagias() {
@@ -103,6 +109,24 @@ public class MainMenuService extends MenuService {
             return true;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao gerenciar personagens", e);
+        }
+    }
+
+    private Boolean executarGerenciamentoHabilidades() {
+        try {
+            while (abilityService.execute()) { }
+            return true;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao gerenciar habilidades", e);
+        }
+    }
+
+    private Boolean executarGerenciamentoCombate() {
+        try {
+            while (combatService.execute()) { }
+            return true;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao gerenciar combate", e);
         }
     }
 }

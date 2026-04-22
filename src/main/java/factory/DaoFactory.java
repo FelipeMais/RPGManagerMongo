@@ -63,6 +63,15 @@ public class DaoFactory {
         return null;
     }
 
+    public static AbilityDAO getAbilityDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new AbilitySqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
     public static MagicAttributeDAO getMagicAttributeDAO() {
         if (sharedConnection == null) init();
 
@@ -117,6 +126,15 @@ public class DaoFactory {
         return null;
     }
 
+    public static InventoryDAO getInventoryDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new InventorySqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
     public static CharacterDAO getCharacterDAO() {
         if (sharedConnection == null) init();;
 
@@ -135,20 +153,38 @@ public class DaoFactory {
         return null;
     }
 
-    public static SkillDAO getSkillDAO() {
+    public static CombatActionTypeDAO getCombatActionTypeDAO() {
         if (sharedConnection == null) init();
 
         if ("SQL".equalsIgnoreCase(dbType)) {
-            return new SkillSqlDAO((Connection) sharedConnection);
+            return new CombatActionTypeSqlDAO((Connection) sharedConnection);
         }
         return null;
     }
 
-    public static CharacterSheetSkillDAO getCharacterSheetSkillDAO() {
+    public static CombatDAO getCombatDAO() {
         if (sharedConnection == null) init();
 
         if ("SQL".equalsIgnoreCase(dbType)) {
-            return new CharacterSheetSkillSqlDAO((Connection) sharedConnection);
+            return new CombatSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static CombatActionDAO getCombatActionDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new CombatActionSqlDAO((Connection) sharedConnection);
+        }
+        return null;
+    }
+
+    public static CombatantDAO getCombatantDAO() {
+        if (sharedConnection == null) init();
+
+        if ("SQL".equalsIgnoreCase(dbType)) {
+            return new CombatantSqlDAO((Connection) sharedConnection);
         }
         return null;
     }

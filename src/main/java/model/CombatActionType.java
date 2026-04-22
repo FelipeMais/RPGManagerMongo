@@ -1,19 +1,30 @@
 package model;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class CombatActionType {
     private Integer id;
-    private String nome;
+    private String name;
 
-    public CombatActionType(Integer id, String nome) {
+    public CombatActionType(String name) {
+        this(null, name);
+    }
+
+    public CombatActionType(Integer id, String name) {
         this.id = id;
-        this.nome = nome;
+        this.name = name;
+    }
+
+    public static CombatActionType fromResultSet(ResultSet result) throws SQLException {
+        return new CombatActionType(result.getInt(1), result.getString(2));
     }
 
     public Integer getId() {
         return id;
     }
 
-    public String getNome() {
-        return nome;
+    public String getName() {
+        return name;
     }
 }
