@@ -16,6 +16,7 @@ import model.CombatActionType;
 import model.Item;
 import model.Location;
 import model.Magic;
+import util.Colors;
 import util.Option;
 import util.UI;
 

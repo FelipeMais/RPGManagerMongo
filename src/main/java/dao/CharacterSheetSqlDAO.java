@@ -16,7 +16,6 @@ import java.util.List;
 
 public class CharacterSheetSqlDAO implements CharacterSheetDAO {
     private final Connection connection;
-
     public CharacterSheetSqlDAO(Connection connection) {
         this.connection = connection;
     }
@@ -159,6 +158,7 @@ public class CharacterSheetSqlDAO implements CharacterSheetDAO {
         st.close();
         return list;
     }
+
 
     private void setNullableInteger(PreparedStatement st, int parameterIndex, Integer value) throws SQLException {
         if (value == null) {

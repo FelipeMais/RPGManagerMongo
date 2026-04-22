@@ -3,6 +3,7 @@ package service;
 import contracts.LocationTypeDAO;
 import factory.DaoFactory;
 import model.LocationType;
+import util.Colors;
 import util.Option;
 import util.UI;
 
@@ -88,7 +89,7 @@ public class LocationTypeService extends MenuService {
                 System.out.println("Tipo de local nao encontrado");
                 return true;
             }
-            print(Collections.singletonList(locationType));
+            detail(locationType);
             UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar tipo de local!");
@@ -121,5 +122,16 @@ public class LocationTypeService extends MenuService {
         }
 
         UI.printTable(headers, widths, rows);
+    }
+
+    private void detail(LocationType locationType) {
+        int width = 45;
+        System.out.println("\n" + Colors.CYAN + "╔" + "═".repeat(width + 2) + "╗");
+        UI.printRow(Colors.BOLD + locationType.getName().toUpperCase(), width);
+        if (locationType.getDescription() != null) {
+            System.out.println(Colors.CYAN + "╟" + "─".repeat(width + 2) + "╢");
+            UI.printRow(Colors.GRAY + locationType.getDescription(), width);
+        }
+        System.out.println(Colors.CYAN + "╚" + "═".repeat(width + 2) + "╝\n" + Colors.RESET);
     }
 }

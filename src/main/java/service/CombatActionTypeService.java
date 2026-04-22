@@ -3,6 +3,7 @@ package service;
 import contracts.CombatActionTypeDAO;
 import factory.DaoFactory;
 import model.CombatActionType;
+import util.Colors;
 import util.Option;
 import util.UI;
 
@@ -85,7 +86,7 @@ public class CombatActionTypeService extends MenuService {
                 System.out.println("Tipo de acao de combate nao encontrado");
                 return true;
             }
-            print(Collections.singletonList(combatActionType));
+            detail(combatActionType);
             UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar tipo de acao de combate!");
@@ -117,5 +118,12 @@ public class CombatActionTypeService extends MenuService {
         }
 
         UI.printTable(headers, widths, rows);
+    }
+
+    private void detail(CombatActionType entity) {
+        int width = 45;
+        System.out.println("\n" + Colors.CYAN + "╔" + "═".repeat(width + 2) + "╗");
+        UI.printRow(Colors.BOLD + entity.getName().toUpperCase(), width);
+        System.out.println(Colors.CYAN + "╚" + "═".repeat(width + 2) + "╝\n" + Colors.RESET);
     }
 }

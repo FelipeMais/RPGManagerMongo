@@ -11,6 +11,7 @@ import model.CharacterSheet;
 import model.Magic;
 import model.RpgClass;
 import model.Species;
+import util.Colors;
 import util.Option;
 import util.UI;
 
@@ -142,7 +143,7 @@ public class CharacterSheetService extends MenuService {
                 System.out.println("Ficha nao encontrada");
                 return false;
             }
-            print(Collections.singletonList(characterSheet));
+            detail(characterSheet);
             UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar ficha!");
@@ -186,6 +187,35 @@ public class CharacterSheetService extends MenuService {
         }
 
         UI.printTable(headers, widths, rows);
+    }
+
+    protected void detail(CharacterSheet sheet) throws SQLException {
+        int width = 60;
+        String rClass = sheet.getClassId() != null ? rpgClassDAO.findById(sheet.getClassId()).getClassName() : "None";
+        String spec = sheet.getSpeciesId() != null ? speciesDAO.findById(sheet.getSpeciesId()).getName() : "Unknown";
+
+        System.out.println("\n" + Colors.CYAN + "╔" + "═".repeat(width + 2) + "╗");
+        UI.printRow(Colors.BOLD + "FICHA TÉCNICA - LV. " + sheet.getLevel(), width);
+        UI.printRow(Colors.BLUE + rClass + Colors.RESET + " | " + Colors.GREEN + spec, width);
+        System.out.println(Colors.CYAN + "╠" + "═".repeat(width + 2) + "╣");
+
+        UI.printRow(Colors.YELLOW + " STR: " + Colors.RESET + String.format("%-4d", sheet.getStrength()) + Colors.YELLOW + " INT: " + Colors.RESET + sheet.getIntelligence(), width);
+        UI.printRow(Colors.YELLOW + " DEX: " + Colors.RESET + String.format("%-4d", sheet.getDexterity()) + Colors.YELLOW + " WIS: " + Colors.RESET + sheet.getWisdom(), width);
+        UI.printRow(Colors.YELLOW + " CON: " + Colors.RESET + String.format("%-4d", sheet.getConstitution()) + Colors.YELLOW + " CHA: " + Colors.RESET + sheet.getCharisma(), width);
+
+        System.out.println(Colors.CYAN + "╟" + "─".repeat(width + 2) + "╢");
+        UI.printRow(Colors.BOLD + "[ HABILIDADES ]", width);
+        if (sheet.getKnownAbilities() != null && !sheet.getKnownAbilities().isEmpty()) {
+            for (var ab : sheet.getKnownAbilities()) UI.printRow(" • " + ab.getName(), width);
+        } else { UI.printRow(Colors.GRAY + "  (Nenhuma habilidade)", width); }
+
+        System.out.println(Colors.CYAN + "╟" + "─".repeat(width + 2) + "╢");
+        UI.printRow(Colors.BOLD + "[ MAGIAS CONHECIDAS ]", width);
+        if (sheet.getKnownMagics() != null && !sheet.getKnownMagics().isEmpty()) {
+            for (var mg : sheet.getKnownMagics()) UI.printRow(" * " + Colors.PURPLE + mg.getName(), width);
+        } else { UI.printRow(Colors.GRAY + "  (Nenhuma magia)", width); }
+
+        System.out.println(Colors.CYAN + "╚" + "═".repeat(width + 2) + "╝\n" + Colors.RESET);
     }
 
     private Integer normalizeNullableId(Integer value) {

@@ -16,6 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
+import static util.Colors.*;
+
 public class ItemService extends MenuService {
     private final AttributeDAO attributeDAO;
     private final ItemDAO itemDAO;
@@ -154,7 +156,7 @@ public class ItemService extends MenuService {
                 System.out.println("Item nao encontrado");
                 return false;
             }
-            print(Collections.singletonList(item));
+            detail(item);
             UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar item!");
@@ -191,6 +193,58 @@ public class ItemService extends MenuService {
 
         UI.printTable(headers, widths, rows);
     }
+
+    private void detail(Item item) {
+
+        int width = 50;
+
+        System.out.println("\n" + CYAN + "╔" + "═".repeat(width + 2) + "╗" + RESET);
+
+        UI.printRow(BOLD.toString() + PURPLE + item.getName().toUpperCase() + RESET + " " + GRAY + "#" + item.getId() + RESET, width);
+
+        System.out.println(CYAN + "╠" + "═".repeat(width + 2) + "╣" + RESET);
+
+        String weightValue = "Peso: " + item.getWeight() + "kg | Valor: " + GOLD + item.getMonetaryValue() + " moedas" + RESET;
+        UI.printRow(weightValue, width);
+
+        System.out.println(CYAN + "╟" + "─".repeat(width + 2) + "╢" + RESET);
+
+        UI.printRow(BOLD + "[ Atributos ]" + RESET, width);
+        if (item.getAttributes() != null && !item.getAttributes().isEmpty()) {
+            for (var attr : item.getAttributes()) {
+                String name = attr.getAttribute() != null ? attr.getAttribute().getName() : "Attr #" + attr.getAttributeId();
+
+                String display;
+                if (attr.getValue() == 0) {
+
+                    display = GREEN + name + RESET;
+                } else {
+
+                    String bonus = (attr.getValue() > 0 ? "+" : "") + attr.getValue();
+                    display = " • " + name + ": " + BOLD + bonus + RESET;
+                }
+                UI.printRow(display, width);
+            }
+        } else {
+            UI.printRow(GRAY + "  (Nenhum Atributo Registrado)" + RESET, width);
+        }
+
+        System.out.println(CYAN + "╟" + "─".repeat(width + 2) + "╢" + RESET);
+
+        if (item.getDescription() != null && !item.getDescription().isBlank()) {
+            String desc = item.getDescription();
+            while (desc.length() > width) {
+                int cut = desc.lastIndexOf(' ', width);
+                if (cut == -1) cut = width;
+                UI.printRow(GRAY + desc.substring(0, cut).trim() + RESET, width);
+                desc = desc.substring(cut).trim();
+            }
+            UI.printRow(GRAY + desc + RESET, width);
+        }
+
+        System.out.println(CYAN + "╚" + "═".repeat(width + 2) + "╝" + RESET + "\n");
+    }
+
 
     private String formatAttributes(List<ItemAttribute> attributes) {
         if (attributes == null || attributes.isEmpty()) {
