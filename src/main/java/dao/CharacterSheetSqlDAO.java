@@ -16,10 +16,8 @@ import java.util.List;
 
 public class CharacterSheetSqlDAO implements CharacterSheetDAO {
     private final Connection connection;
-    private final CharacterSheetSkillDAO characterSheetSkillDAO;
     public CharacterSheetSqlDAO(Connection connection) {
         this.connection = connection;
-        this.characterSheetSkillDAO = new CharacterSheetSkillSqlDAO(connection);
     }
 
     @Override
@@ -161,19 +159,6 @@ public class CharacterSheetSqlDAO implements CharacterSheetDAO {
         return list;
     }
 
-    private void persistSkills(Integer sheetId, List<CharacterSheetSkill> skills) throws SQLException {
-        if (skills == null) {
-            return;
-        }
-        for (CharacterSheetSkill skill : skills) {
-            characterSheetSkillDAO.insert(new CharacterSheetSkill(
-                    sheetId,
-                    skill.getSkillId(),
-                    skill.getValue(),
-                    skill.getSkill()
-            ));
-        }
-    }
 
     private void setNullableInteger(PreparedStatement st, int parameterIndex, Integer value) throws SQLException {
         if (value == null) {
