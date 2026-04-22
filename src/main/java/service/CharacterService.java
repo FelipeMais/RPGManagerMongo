@@ -19,6 +19,7 @@ import model.Player;
 import model.RpgClass;
 import model.Species;
 import model.relationship.InventoryItem;
+import util.Colors;
 import util.Option;
 import util.UI;
 
@@ -247,35 +248,52 @@ public class CharacterService extends MenuService {
     }
 
     private void detail(Character character) throws SQLException {
-        int width = 50;
+        int width = 60;
         CharacterSheet sheet = characterSheetDAO.findById(character.getSheetId());
-        Player player = character.getPlayerId() != null ? playerDAO.findById(character.getPlayerId()) : null;
-        Location loc = character.getCurrentLocationId() != null ? locationDAO.findById(character.getCurrentLocationId()) : null;
-        RpgClass rClass = (sheet != null && sheet.getClassId() != null) ? rpgClassDAO.findById(sheet.getClassId()) : null;
-        Species spec = (sheet != null && sheet.getSpeciesId() != null) ? speciesDAO.findById(sheet.getSpeciesId()) : null;
+        Player p = character.getPlayerId() != null ? playerDAO.findById(character.getPlayerId()) : null;
+        Location l = character.getCurrentLocationId() != null ? locationDAO.findById(character.getCurrentLocationId()) : null;
 
-        System.out.println("\n" + CYAN + "╔" + "═".repeat(width + 2) + "╗" + RESET);
+        System.out.println("\n" + Colors.CYAN + "╔" + "═".repeat(width + 2) + "╗");
 
-        UI.printRow(GRAY + (player != null ? player.getName() : "NPC"), width);
-        UI.printRow(BOLD.toString() + character.getName().toUpperCase() + GRAY + " (Lv. " + (sheet != null ? sheet.getLevel() : 0) + ")", width);
-        UI.printRow(BLUE.toString() + (rClass != null ? rClass.getClassName() : "Sem classe") + " " + GREEN + (spec != null ? spec.getName() : "Desconhecido"), width);
+        UI.printRow(Colors.BOLD + "JOGADOR: " + Colors.RESET + (p != null ? p.getName() : "NPC"), width);
+        UI.printRow(Colors.BOLD + character.getName().toUpperCase() + Colors.GRAY + " #" + character.getId(), width);
+        UI.printRow(Colors.RED + "HP: " + character.getHitPoints() + "/" + (sheet != null ? sheet.getMaxHitPoints() : "??") +
+                Colors.BLUE + "  MP: " + character.getManaPoints() + "/" + (sheet != null ? sheet.getMaxManaPoints() : "??"), width);
+        UI.printRow(Colors.BOLD + "LOCAL:   " + Colors.RESET + (l != null ? l.getName() : "Desconhecido"), width);
+        System.out.println(Colors.CYAN + "╠" + "═".repeat(width + 2) + "╣");
 
-        System.out.println(CYAN + "╠" + "═".repeat(width + 2) + "╣");
+        String rClass = sheet.getClassId() != null ? rpgClassDAO.findById(sheet.getClassId()).getClassName() : "None";
+        String spec = sheet.getSpeciesId() != null ? speciesDAO.findById(sheet.getSpeciesId()).getName() : "Unknown";
 
-        UI.printRow(RED + "HP: " + character.getHitPoints() + "/" + (sheet != null ? sheet.getMaxHitPoints() : 0) + " | " +
-                BLUE + "MP: " + character.getManaPoints() + "/" + (sheet != null ? sheet.getMaxManaPoints() : 0), width);
-        UI.printRow(BOLD + "LOCALIZAÇÃO ATUAL: " + RESET + (loc != null ? loc.getName() : "Desconhecido"), width);
+        UI.printRow(Colors.BOLD + "FICHA TÉCNICA - LV. " + sheet.getLevel(), width);
+        UI.printRow(Colors.BLUE + rClass + Colors.RESET + " | " + Colors.GREEN + spec, width);
+        System.out.println(Colors.CYAN + "╠" + "═".repeat(width + 2) + "╣");
 
-        System.out.println(CYAN + "╟" + "─".repeat(width + 2) + "╢");
+        UI.printRow(Colors.YELLOW + " STR: " + Colors.RESET + String.format("%-4d", sheet.getStrength()) + Colors.YELLOW + " INT: " + Colors.RESET + sheet.getIntelligence(), width);
+        UI.printRow(Colors.YELLOW + " DEX: " + Colors.RESET + String.format("%-4d", sheet.getDexterity()) + Colors.YELLOW + " WIS: " + Colors.RESET + sheet.getWisdom(), width);
+        UI.printRow(Colors.YELLOW + " CON: " + Colors.RESET + String.format("%-4d", sheet.getConstitution()) + Colors.YELLOW + " CHA: " + Colors.RESET + sheet.getCharisma(), width);
 
-        UI.printRow(BOLD + "[ ATRIBUTOS ]", width);
-        if (sheet != null) {
-            UI.printRow(YELLOW + " FOR: " + RESET + String.format("%-4d", sheet.getStrength()) + YELLOW + "INT: " + RESET + sheet.getIntelligence(), width);
-            UI.printRow(YELLOW + " DEX: " + RESET + String.format("%-4d", sheet.getDexterity()) + YELLOW + "SAB: " + RESET + sheet.getWisdom(), width);
-            UI.printRow(YELLOW + " CON: " + RESET + String.format("%-4d", sheet.getConstitution()) + YELLOW + "CAR: " + RESET + sheet.getCharisma(), width);
-        }
+        System.out.println(Colors.CYAN + "╟" + "─".repeat(width + 2) + "╢");
+        UI.printRow(Colors.BOLD + "[ HABILIDADES ]", width);
+        if (sheet.getKnownAbilities() != null && !sheet.getKnownAbilities().isEmpty()) {
+            for (var ab : sheet.getKnownAbilities()) UI.printRow(" • " + ab.getName(), width);
+        } else { UI.printRow(Colors.GRAY + "  (Nenhuma habilidade)", width); }
 
-        System.out.println(CYAN + "╠" + "═".repeat(width + 2) + "╝" + RESET);
+        System.out.println(Colors.CYAN + "╟" + "─".repeat(width + 2) + "╢");
+        UI.printRow(Colors.BOLD + "[ MAGIAS CONHECIDAS ]", width);
+        if (sheet.getKnownMagics() != null && !sheet.getKnownMagics().isEmpty()) {
+            for (var mg : sheet.getKnownMagics()) UI.printRow(" * " + Colors.PURPLE + mg.getName(), width);
+        } else { UI.printRow(Colors.GRAY + "  (Nenhuma magia)", width); }
+
+        System.out.println(Colors.CYAN + "╠" + "═".repeat(width + 2) + "╣" + Colors.RESET);
+        UI.printRow(Colors.BOLD + "[ INVENTÁRIO ]", width);
+        if (character.getInventory() != null && !character.getInventory().isEmpty()) {
+            for (var inv : character.getInventory()) {
+                UI.printRow(" x" + inv.getQuantity() + " " + (inv.getItem() != null ? inv.getItem().getName() : "Item #" + inv.getItemId()), width);
+            }
+        } else { UI.printRow(Colors.GRAY + "  (Vazio)", width); }
+
+        System.out.println(Colors.CYAN + "╠" + "═".repeat(width + 2) + "╣");
 
         UI.printRow(BOLD + "[ HISTÓRIA ]" + RESET, width);
         String history = (character.getHistory() != null) ? character.getHistory() : "A história deste personagem é desconhecida...";

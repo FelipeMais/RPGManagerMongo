@@ -3,6 +3,7 @@ package service;
 import contracts.PlayerDAO;
 import factory.DaoFactory;
 import model.Player;
+import util.Colors;
 import util.Option;
 import util.UI;
 
@@ -92,7 +93,7 @@ public class PlayerService extends MenuService {
                 System.out.println("Jogador nao encontrado");
                 return false;
             }
-            print(Collections.singletonList(player));
+            detail(player);
             UI.enterAnythingToContinue();
         } catch (Exception err) {
             System.out.println("Erro ao buscar jogador!");
@@ -126,5 +127,15 @@ public class PlayerService extends MenuService {
         }
 
         UI.printTable(headers, widths, rows);
+    }
+
+    private void detail(Player player) {
+        int width = 45;
+        System.out.println("\n" + Colors.CYAN + "╔" + "═".repeat(width + 2) + "╗");
+        UI.printRow(Colors.BOLD + player.getName().toUpperCase() +
+        (player.getActive() ? Colors.GREEN + " ATIVO" : Colors.RED + " INATIVO"), width);
+        System.out.println(Colors.CYAN + "╟" + "─".repeat(width + 2) + "╢");
+        UI.printRow(Colors.GRAY + player.getEntryDate().toString(), width);
+        System.out.println(Colors.CYAN + "╚" + "═".repeat(width + 2) + "╝\n"+ Colors.RESET);
     }
 }
