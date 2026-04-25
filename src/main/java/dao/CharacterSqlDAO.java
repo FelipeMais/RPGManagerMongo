@@ -115,7 +115,7 @@ public class CharacterSqlDAO implements CharacterDAO {
         }
         st.close();
         if (!list.isEmpty()) {
-            return list.getFirst();
+            return list.get(0);
         }
         return null;
     }

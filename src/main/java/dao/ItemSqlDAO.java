@@ -112,7 +112,7 @@ public class ItemSqlDAO implements ItemDAO {
         }
         st.close();
         if (!list.isEmpty()) {
-            return list.getFirst();
+            return list.get(0);
         }
         return null;
     }
