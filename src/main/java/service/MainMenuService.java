@@ -15,6 +15,7 @@ public class MainMenuService extends MenuService {
     private final RpgClassService rpgClassService;
     private final SpeciesService speciesService;
     private final CharacterService characterService;
+    private final ReportService reportService;
 
     public MainMenuService() throws SQLException {
         this.itemService = new ItemService();
@@ -27,6 +28,7 @@ public class MainMenuService extends MenuService {
         this.rpgClassService = new RpgClassService();
         this.speciesService = new SpeciesService();
         this.characterService = new CharacterService();
+        this.reportService = new ReportService();
         this.menuTitle = "MENU PRINCIPAL";
         this.menuOptions.add(new Option(1, "GERENCIAR MAGIAS", this::executarGerenciamentoMagias));
         this.menuOptions.add(new Option(2, "GERENCIAR ITENS", this::executarGerenciamentoItens));
@@ -38,6 +40,7 @@ public class MainMenuService extends MenuService {
         this.menuOptions.add(new Option(8, "GERENCIAR PERSONAGENS", this::executarGerenciamentoPersonagens));
         this.menuOptions.add(new Option(9, "GERENCIAR HABILIDADES", this::executarGerenciamentoHabilidades));
         this.menuOptions.add(new Option(10, "GERENCIAR COMBATE", this::executarGerenciamentoCombate));
+        this.menuOptions.add(new Option(11, "RELATORIOS", this::executarGerenciamentoRelatorios));
     }
 
     private Boolean executarGerenciamentoMagias() {
@@ -127,6 +130,15 @@ public class MainMenuService extends MenuService {
             return true;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao gerenciar combate", e);
+        }
+    }
+
+    private Boolean executarGerenciamentoRelatorios() {
+        try {
+            while (reportService.execute()) { }
+            return true;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao abrir menu de relatórios", e);
         }
     }
 }

@@ -206,13 +206,13 @@ public class CharacterSheetService extends MenuService {
         System.out.println(Colors.CYAN + "╟" + "─".repeat(width + 2) + "╢");
         UI.printRow(Colors.BOLD + "[ HABILIDADES ]", width);
         if (sheet.getKnownAbilities() != null && !sheet.getKnownAbilities().isEmpty()) {
-            for (var ab : sheet.getKnownAbilities()) UI.printRow(" • " + ab.getName(), width);
+            for (Ability ab : sheet.getKnownAbilities()) UI.printRow(" • " + ab.getName(), width);
         } else { UI.printRow(Colors.GRAY + "  (Nenhuma habilidade)", width); }
 
         System.out.println(Colors.CYAN + "╟" + "─".repeat(width + 2) + "╢");
         UI.printRow(Colors.BOLD + "[ MAGIAS CONHECIDAS ]", width);
         if (sheet.getKnownMagics() != null && !sheet.getKnownMagics().isEmpty()) {
-            for (var mg : sheet.getKnownMagics()) UI.printRow(" * " + Colors.PURPLE + mg.getName(), width);
+            for (Magic mg : sheet.getKnownMagics()) UI.printRow(" * " + Colors.PURPLE + mg.getName(), width);
         } else { UI.printRow(Colors.GRAY + "  (Nenhuma magia)", width); }
 
         System.out.println(Colors.CYAN + "╚" + "═".repeat(width + 2) + "╝\n" + Colors.RESET);
