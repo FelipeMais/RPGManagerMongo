@@ -1,9 +1,11 @@
 package dao;
 
 import contracts.CharacterDAO;
+import model.dto.CharacterWeight;
 import model.relationship.InventoryItem;
 import model.Character;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -113,7 +115,7 @@ public class CharacterSqlDAO implements CharacterDAO {
         }
         st.close();
         if (!list.isEmpty()) {
-            return list.getFirst();
+            return list.get(0);
         }
         return null;
     }
@@ -155,5 +157,61 @@ public class CharacterSqlDAO implements CharacterDAO {
             return;
         }
         st.setInt(parameterIndex, value);
+    }
+
+    @Override
+    public List<Character> findByClassAndSpecies(Integer classId, Integer speciesId) throws SQLException {
+        List<Character> list = new ArrayList<>();
+
+        String sql = "SELECT p.id_personagem, p.id_jogador, p.id_ficha, p.local_atual, " +
+                "p.nome_personagem, p.pontos_vida, p.pontos_mana, p.historia " +
+                "FROM personagem p " +
+                "INNER JOIN ficha f ON p.id_ficha = f.id_ficha " +
+                "WHERE (? = 0 OR f.id_classe = ?) " +
+                "AND (? = 0 OR f.id_especie = ?)";
+
+        PreparedStatement st = connection.prepareStatement(sql);
+        st.setInt(1, classId);
+        st.setInt(2, classId);
+        st.setInt(3, speciesId);
+        st.setInt(4, speciesId);
+
+        ResultSet result = st.executeQuery();
+        while (result.next()) {
+            Character character = Character.fromResultSet(result);
+            character.setInventory(inventoryDAO.findByCharacterId(character.getId()));
+            list.add(character);
+        }
+        st.close();
+
+        return list;
+    }
+
+    @Override
+    public List<CharacterWeight> findPersonagensComSobrecarga(BigDecimal limitePeso) throws SQLException {
+        List<CharacterWeight> list = new ArrayList<>();
+        String sql = "SELECT p.id_personagem, p.id_jogador, p.id_ficha, p.local_atual, " +
+                "p.nome_personagem, p.pontos_vida, p.pontos_mana, p.historia, " +
+                "SUM(i.peso * inv.quantidade) AS peso_total " +
+                "FROM personagem p " +
+                "INNER JOIN inventario inv ON p.id_personagem = inv.id_personagem " +
+                "INNER JOIN itens i ON inv.id_item = i.id_item " +
+                "GROUP BY p.id_personagem, p.id_jogador, p.id_ficha, p.local_atual, " +
+                "p.nome_personagem, p.pontos_vida, p.pontos_mana, p.historia " +
+                "HAVING SUM(i.peso * inv.quantidade) > ?";
+
+        PreparedStatement st = connection.prepareStatement(sql);
+        st.setBigDecimal(1, limitePeso);
+
+        ResultSet result = st.executeQuery();
+        while (result.next()) {
+            Character character = Character.fromResultSet(result);
+            BigDecimal pesoTotal = result.getBigDecimal("peso_total");
+
+            list.add(new CharacterWeight(character, pesoTotal));
+        }
+        st.close();
+
+        return list;
     }
 }

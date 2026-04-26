@@ -59,7 +59,7 @@ public class AttributeSqlDAO implements AttributeDAO {
         }
         st.close();
         if (!list.isEmpty()) {
-            return list.getFirst();
+            return list.get(0);
         }
         return null;
     }

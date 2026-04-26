@@ -61,7 +61,7 @@ public class RpgClassSqlDAO implements RpgClassDAO {
         }
         st.close();
         if (!list.isEmpty()) {
-            return list.getFirst();
+            return list.get(0);
         }
         return null;
     }

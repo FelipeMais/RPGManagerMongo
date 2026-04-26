@@ -422,15 +422,23 @@ public class CharacterService extends MenuService {
             return "-";
         }
 
-        return switch (attributeName) {
-            case "FOR" -> String.valueOf(characterSheet.getStrength());
-            case "DES" -> String.valueOf(characterSheet.getDexterity());
-            case "CON" -> String.valueOf(characterSheet.getConstitution());
-            case "INT" -> String.valueOf(characterSheet.getIntelligence());
-            case "SAB" -> String.valueOf(characterSheet.getWisdom());
-            case "CAR" -> String.valueOf(characterSheet.getCharisma());
-            default -> "-";
-        };
+        switch (attributeName) {
+            case "FOR":
+                return String.valueOf(characterSheet.getStrength());
+            case "DES":
+                return String.valueOf(characterSheet.getDexterity());
+            case "CON":
+                return String.valueOf(characterSheet.getConstitution());
+            case "INT":
+                return String.valueOf(characterSheet.getIntelligence());
+            case "SAB":
+                return String.valueOf(characterSheet.getWisdom());
+            case "CAR":
+                return String.valueOf(characterSheet.getCharisma());
+            default:
+                return "-";
+
+        }
     }
 
     private String formatKnownMagics(CharacterSheet characterSheet) {
