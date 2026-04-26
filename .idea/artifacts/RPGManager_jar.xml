@@ -3,7 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/RPGManager_jar</output-path>
     <root id="archive" name="RPGManager.jar">
       <element id="module-output" name="RPGManager" />
-      <element id="extracted-dir" path="$USER_HOME$/Downloads/postgresql-42.7.4 (1).jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/postgresql-42.7.10.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
