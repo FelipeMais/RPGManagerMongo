@@ -60,7 +60,7 @@ public class ItemService extends MenuService {
         if (askId) {
             System.out.print("Digite o ID do item: ");
             id = scanner.nextInt();
-            scanner.nextInt();
+            scanner.nextLine();
         }
 
         System.out.print("Digite o nome do item: ");
