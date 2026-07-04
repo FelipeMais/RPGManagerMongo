@@ -1,5 +1,6 @@
 package connection;
 
+import connection.config.ConnectionConfig;
 import contracts.DataBaseConnection;
 
 import java.sql.Connection;
@@ -8,10 +9,10 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class SqlConnection implements DataBaseConnection<Connection> {
+public class PostgresConnection implements DataBaseConnection<Connection> {
     private Connection connection;
 
-    public SqlConnection() {
+    public PostgresConnection() {
     }
 
     public Connection connect(ConnectionConfig config) {
@@ -20,7 +21,7 @@ public class SqlConnection implements DataBaseConnection<Connection> {
             this.connection = (Connection) DriverManager.getConnection(config.getUrl(), config.getUser(), config.getSenha());
             return this.connection;
         } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(SqlConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PostgresConnection.class.getName()).log(Level.SEVERE, null, ex);
             ex.printStackTrace();
             throw new RuntimeException("Não foi possivel se conectar ao banco de dados");
         }
@@ -33,7 +34,7 @@ public class SqlConnection implements DataBaseConnection<Connection> {
                 System.out.println("Conexão SQL encerrada com segurança.");
             }
         } catch (SQLException ex) {
-            Logger.getLogger(SqlConnection.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PostgresConnection.class.getName()).log(Level.SEVERE, null, ex);
             ex.printStackTrace();
             System.exit(1);
         }

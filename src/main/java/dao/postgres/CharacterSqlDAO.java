@@ -1,4 +1,4 @@
-package dao;
+package dao.postgres;
 
 import contracts.CharacterDAO;
 import model.dto.CharacterWeight;

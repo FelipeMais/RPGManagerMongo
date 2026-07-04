@@ -1,4 +1,4 @@
-package dao;
+package dao.postgres;
 
 import contracts.ItemAttributeDAO;
 import model.Attribute;

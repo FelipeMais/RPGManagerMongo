@@ -1,6 +1,6 @@
 package contracts;
 
-import connection.ConnectionConfig;
+import connection.config.ConnectionConfig;
 
 public interface DataBaseConnection <T>{
 
