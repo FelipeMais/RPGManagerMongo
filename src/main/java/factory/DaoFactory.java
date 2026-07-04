@@ -3,7 +3,12 @@ package factory;
 import com.mongodb.client.MongoDatabase;
 import connection.config.ConnectionConfig;
 import contracts.*;
+import dao.mongo.AttributeMongoDAO;
+import dao.mongo.ItemAttributeMongoDAO;
 import dao.mongo.ItemMongoDAO;
+import dao.mongo.PlayerMongoDAO;
+import dao.mongo.RpgClassMongoDAO;
+import dao.mongo.SpeciesMongoDAO;
 import dao.postgres.*;
 
 import java.sql.Connection;
@@ -37,7 +42,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new RpgClassSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new RpgClassMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static PlayerDAO getPlayerDAO() {
@@ -46,7 +51,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new PlayerSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new PlayerMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static AttributeDAO getAttributeDAO() {
@@ -55,7 +60,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new AttributeSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new AttributeMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static AbilityDAO getAbilityDAO() {
@@ -82,7 +87,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new ItemAttributeSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new ItemAttributeMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static SpeciesDAO getSpeciesDAO() {
@@ -91,7 +96,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new SpeciesSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new SpeciesMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static LocationDAO getLocationDAO() {

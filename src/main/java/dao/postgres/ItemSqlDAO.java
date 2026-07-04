@@ -66,6 +66,7 @@ public class ItemSqlDAO implements ItemDAO {
             st.setString(2, item.getDescription());
             st.setBigDecimal(3, item.getWeight());
             st.setBigDecimal(4, item.getMonetaryValue());
+            st.setInt(5, item.getId());
             st.executeUpdate();
             st.close();
 

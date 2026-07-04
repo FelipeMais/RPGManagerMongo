@@ -46,7 +46,7 @@ public class ItemService extends MenuService {
     private Boolean update() {
         try {
             Item updatedItem = instantiateItem(true);
-            itemDAO.insert(updatedItem);
+            itemDAO.update(updatedItem);
         } catch (Exception err) {
             System.out.println("Erro ao atualizar item!");
         }

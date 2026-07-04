@@ -8,8 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.relationship.ItemAttribute;
 import org.bson.Document;
+import org.bson.types.Decimal128;
 
 public class Item {
     private Integer id;
@@ -46,20 +46,30 @@ public class Item {
     public static Item fromDocument(Document doc) {
         if (doc == null) return null;
 
-        Number weightNumber = doc.get("peso", Number.class);
-        BigDecimal parsedWeight = weightNumber != null ? new BigDecimal(weightNumber.toString()) : null;
-
-        Number monetaryNumber = doc.get("valor_monetario", Number.class);
-        BigDecimal parsedMonetary = monetaryNumber != null ? new BigDecimal(monetaryNumber.toString()) : null;
-
         return new Item(
                 doc.getInteger("_id"),
                 doc.getString("nome_item"),
                 doc.getString("descricao"),
-                parsedWeight,
-                parsedMonetary,
+                toBigDecimal(doc.get("peso")),
+                toBigDecimal(doc.get("valor_monetario")),
                 new ArrayList<>()
         );
+    }
+
+    private static BigDecimal toBigDecimal(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof BigDecimal) {
+            return (BigDecimal) value;
+        }
+        if (value instanceof Decimal128) {
+            return ((Decimal128) value).bigDecimalValue();
+        }
+        if (value instanceof Number) {
+            return new BigDecimal(value.toString());
+        }
+        return new BigDecimal(value.toString());
     }
 
     public Integer getId() {

@@ -5,11 +5,10 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
 import contracts.ItemDAO;
-import model.Attribute;
-import model.Item; // Ajuste para o pacote real da sua classe Item
-
+import model.Item;
 import model.relationship.ItemAttribute;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -21,37 +20,26 @@ import java.util.List;
 public class ItemMongoDAO implements ItemDAO {
 
     private final MongoCollection<Document> collection;
+    private final ItemAttributeMongoDAO itemAttributeDAO;
 
     public ItemMongoDAO(MongoDatabase database) {
-        // Usa a coleção "itens"
         this.collection = database.getCollection("itens");
+        this.itemAttributeDAO = new ItemAttributeMongoDAO(database);
     }
 
     @Override
     public void insert(Item newItem) throws SQLException {
         try {
-            // Criando o documento principal do Item
-            // Forçamos o campo "_id" a ser o Integer que veio do seu modelo
-            Document doc = new Document("_id", newItem.getId())
+            Integer itemId = newItem.getId() != null ? newItem.getId() : nextItemId();
+            Document doc = new Document("_id", itemId)
                     .append("nome_item", newItem.getName())
                     .append("descricao", newItem.getDescription())
                     .append("peso", newItem.getWeight())
-                    .append("valor_monetario", newItem.getMonetaryValue());
-
-
-            List<Document> qualidadesDocs = new ArrayList<>();
-            for (ItemAttribute a : newItem.getAttributes()) {
-                qualidadesDocs.add(new Document("qualidade_id", a.getItemId())
-                                        .append("nome_qualidade", a.getAttribute().getName())
-                                        .append("valor", a.getValue()));
-            }
-            doc.append("qualidades", qualidadesDocs);
-
+                    .append("valor_monetario", newItem.getMonetaryValue())
+                    .append("qualidades", toAttributeDocuments(newItem.getAttributes()));
 
             collection.insertOne(doc);
-
         } catch (MongoException e) {
-            // Se der erro no Mongo, encapsulamos num SQLException para respeitar a interface
             throw new SQLException("Erro ao inserir item no MongoDB", e);
         }
     }
@@ -59,20 +47,16 @@ public class ItemMongoDAO implements ItemDAO {
     @Override
     public void update(Item item) throws SQLException {
         try {
-            // Busca o item pelo Integer ID
             Bson filter = Filters.eq("_id", item.getId());
-
-            // Define quais campos serão atualizados
             Bson updates = Updates.combine(
                     Updates.set("nome_item", item.getName()),
                     Updates.set("descricao", item.getDescription()),
                     Updates.set("peso", item.getWeight()),
-                    Updates.set("valor_monetario", item.getMonetaryValue())
-                    // Updates.set("qualidades", novaListaDeQualidadesDocs) -> Se for atualizar a lista
+                    Updates.set("valor_monetario", item.getMonetaryValue()),
+                    Updates.set("qualidades", toAttributeDocuments(item.getAttributes()))
             );
 
             collection.updateOne(filter, updates);
-
         } catch (MongoException e) {
             throw new SQLException("Erro ao atualizar item no MongoDB", e);
         }
@@ -83,7 +67,6 @@ public class ItemMongoDAO implements ItemDAO {
         try {
             Bson filter = Filters.eq("_id", itemId);
             collection.deleteOne(filter);
-
         } catch (MongoException e) {
             throw new SQLException("Erro ao remover item no MongoDB", e);
         }
@@ -99,8 +82,7 @@ public class ItemMongoDAO implements ItemDAO {
                 return null;
             }
 
-            return Item.fromDocument(doc);
-
+            return fromDocument(doc);
         } catch (MongoException e) {
             throw new SQLException("Erro ao buscar item por ID no MongoDB", e);
         }
@@ -112,8 +94,7 @@ public class ItemMongoDAO implements ItemDAO {
 
         try (MongoCursor<Document> cursor = collection.find().iterator()) {
             while (cursor.hasNext()) {
-                Document doc = cursor.next();
-                itens.add(Item.fromDocument(doc));
+                itens.add(fromDocument(cursor.next()));
             }
         } catch (MongoException e) {
             throw new SQLException("Erro ao listar todos os itens no MongoDB", e);
@@ -122,4 +103,33 @@ public class ItemMongoDAO implements ItemDAO {
         return itens;
     }
 
+    private Integer nextItemId() {
+        Document lastItem = collection.find()
+                .sort(Sorts.descending("_id"))
+                .first();
+
+        if (lastItem == null || lastItem.getInteger("_id") == null) {
+            return 1;
+        }
+        return lastItem.getInteger("_id") + 1;
+    }
+
+    private List<Document> toAttributeDocuments(List<ItemAttribute> attributes) {
+        List<Document> attributeDocuments = new ArrayList<>();
+        if (attributes == null) {
+            return attributeDocuments;
+        }
+
+        for (ItemAttribute attribute : attributes) {
+            attributeDocuments.add(new Document("id_qualidade", attribute.getAttributeId())
+                    .append("valor", attribute.getValue()));
+        }
+        return attributeDocuments;
+    }
+
+    private Item fromDocument(Document doc) throws SQLException {
+        Item item = Item.fromDocument(doc);
+        item.setAttributes(itemAttributeDAO.findByItemId(item.getId()));
+        return item;
+    }
 }
