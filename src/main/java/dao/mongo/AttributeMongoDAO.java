@@ -20,10 +20,12 @@ public class AttributeMongoDAO implements AttributeDAO {
 
     private final MongoCollection<Document> collection;
     private final MongoCollection<Document> itemCollection;
+    private final MongoCollection<Document> magicCollection;
 
     public AttributeMongoDAO(MongoDatabase database) {
         this.collection = database.getCollection("qualidades");
         this.itemCollection = database.getCollection("itens");
+        this.magicCollection = database.getCollection("magias");
     }
 
     @Override
@@ -54,7 +56,7 @@ public class AttributeMongoDAO implements AttributeDAO {
     public void remove(Integer attributeId) throws SQLException {
         try {
             if (isAttributeInUse(attributeId)) {
-                throw new SQLException("Nao foi possivel remover o atributo porque ele esta vinculado a itens.");
+                throw new SQLException("Nao foi possivel remover o atributo porque ele esta vinculado a itens ou magias.");
             }
 
             Bson filter = Filters.eq("_id", attributeId);
@@ -106,7 +108,9 @@ public class AttributeMongoDAO implements AttributeDAO {
     private boolean isAttributeInUse(Integer attributeId) {
         Bson currentFormat = Filters.elemMatch("qualidades", Filters.eq("id_qualidade", attributeId));
         Bson oldFormat = Filters.elemMatch("qualidades", Filters.eq("qualidade_id", attributeId));
-        return itemCollection.find(Filters.or(currentFormat, oldFormat)).first() != null;
+        Bson filter = Filters.or(currentFormat, oldFormat);
+        return itemCollection.find(filter).first() != null
+                || magicCollection.find(filter).first() != null;
     }
 
     private Attribute fromDocument(Document doc) {

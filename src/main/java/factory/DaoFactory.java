@@ -6,6 +6,8 @@ import contracts.*;
 import dao.mongo.AttributeMongoDAO;
 import dao.mongo.ItemAttributeMongoDAO;
 import dao.mongo.ItemMongoDAO;
+import dao.mongo.MagicAttributeMongoDAO;
+import dao.mongo.MagicMongoDAO;
 import dao.mongo.PlayerMongoDAO;
 import dao.mongo.RpgClassMongoDAO;
 import dao.mongo.SpeciesMongoDAO;
@@ -33,7 +35,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new MagicSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new MagicMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static RpgClassDAO getRpgClassDAO() {
@@ -78,7 +80,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new MagicAttributeSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new MagicAttributeMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static ItemAttributeDAO getItemAttributeDAO() {

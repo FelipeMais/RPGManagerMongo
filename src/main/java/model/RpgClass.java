@@ -1,5 +1,7 @@
 package model;
 
+import org.bson.Document;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -23,6 +25,14 @@ public class RpgClass {
                 result.getInt(1),
                 result.getString(2),
                 result.getString(3)
+        );
+    }
+
+    public static RpgClass fromDocument(Document doc) {
+        return new RpgClass(
+                doc.getInteger("_id"),
+                doc.getString("nome_classe"),
+                doc.getString("descricao")
         );
     }
 

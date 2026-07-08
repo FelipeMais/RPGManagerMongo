@@ -69,7 +69,7 @@ public class RpgClassMongoDAO implements RpgClassDAO {
             if (doc == null) {
                 return null;
             }
-            return fromDocument(doc);
+            return RpgClass.fromDocument(doc);
         } catch (MongoException e) {
             throw new SQLException("Erro ao buscar classe por ID no MongoDB", e);
         }
@@ -81,7 +81,7 @@ public class RpgClassMongoDAO implements RpgClassDAO {
 
         try (MongoCursor<Document> cursor = collection.find().iterator()) {
             while (cursor.hasNext()) {
-                rpgClasses.add(fromDocument(cursor.next()));
+                rpgClasses.add(RpgClass.fromDocument(cursor.next()));
             }
         } catch (MongoException e) {
             throw new SQLException("Erro ao listar classes no MongoDB", e);
@@ -99,13 +99,5 @@ public class RpgClassMongoDAO implements RpgClassDAO {
             return 1;
         }
         return lastRpgClass.getInteger("_id") + 1;
-    }
-
-    private RpgClass fromDocument(Document doc) {
-        return new RpgClass(
-                doc.getInteger("_id"),
-                doc.getString("nome_classe"),
-                doc.getString("descricao")
-        );
     }
 }
