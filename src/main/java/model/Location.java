@@ -1,5 +1,7 @@
 package model;
 
+import org.bson.Document;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -39,6 +41,16 @@ public class Location {
                 locationTypeId,
                 result.getString(4),
                 result.getString(5)
+        );
+    }
+
+    public static Location fromDocument(Document doc) {
+        return new Location(
+                doc.getInteger("local_pai"),
+                doc.getInteger("_id"),
+                doc.getInteger("id_tipo_local"),
+                doc.getString("nome_local"),
+                doc.getString("descricao")
         );
     }
 

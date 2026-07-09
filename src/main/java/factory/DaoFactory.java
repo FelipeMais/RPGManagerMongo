@@ -3,14 +3,7 @@ package factory;
 import com.mongodb.client.MongoDatabase;
 import connection.config.ConnectionConfig;
 import contracts.*;
-import dao.mongo.AttributeMongoDAO;
-import dao.mongo.ItemAttributeMongoDAO;
-import dao.mongo.ItemMongoDAO;
-import dao.mongo.MagicAttributeMongoDAO;
-import dao.mongo.MagicMongoDAO;
-import dao.mongo.PlayerMongoDAO;
-import dao.mongo.RpgClassMongoDAO;
-import dao.mongo.SpeciesMongoDAO;
+import dao.mongo.*;
 import dao.postgres.*;
 
 import java.sql.Connection;
@@ -71,7 +64,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new AbilitySqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new AbilityMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static MagicAttributeDAO getMagicAttributeDAO() {
@@ -107,7 +100,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new LocationSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new LocationMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static LocationTypeDAO getLocationTypeDAO() {
@@ -116,7 +109,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new LocationTypeSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new LocationTypeMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static ItemDAO getItemDAO() {
@@ -134,7 +127,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new InventorySqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new InventoryMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static CharacterDAO getCharacterDAO() {
@@ -143,7 +136,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)){
             return new CharacterSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new CharacterMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static CharacterSheetDAO getCharacterSheetDAO() {
@@ -152,7 +145,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new CharacterSheetSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new CharacterSheetMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static CombatActionTypeDAO getCombatActionTypeDAO() {
@@ -161,7 +154,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new CombatActionTypeSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new CombatActionTypeMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static CombatDAO getCombatDAO() {
