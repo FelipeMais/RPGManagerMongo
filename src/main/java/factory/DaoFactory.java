@@ -163,7 +163,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new CombatSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new CombatMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static CombatActionDAO getCombatActionDAO() {
@@ -172,7 +172,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new CombatActionSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new CombatActionMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static CombatantDAO getCombatantDAO() {
@@ -181,7 +181,7 @@ public class DaoFactory {
         if (DatabaseType.POSTGRES.equals(dbType)) {
             return new CombatantSqlDAO((Connection) sharedConnection);
         }
-        return null;
+        return new CombatantMongoDAO((MongoDatabase) sharedConnection);
     }
 
     public static void close() {
