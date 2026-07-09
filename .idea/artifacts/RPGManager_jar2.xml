@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="RPGManager:jar2">
+    <output-path>$PROJECT_DIR$/out/artifacts/RPGManager_jar2</output-path>
+    <root id="archive" name="RPGManager.jar">
+      <element id="module-output" name="RPGManager" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/mongodb/bson-record-codec/5.0.1/bson-record-codec-5.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/postgresql/postgresql/42.7.10/postgresql-42.7.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/mongodb/mongodb-driver-sync/5.0.1/mongodb-driver-sync-5.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/checkerframework/checker-qual/3.52.0/checker-qual-3.52.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/mongodb/mongodb-driver-core/5.0.1/mongodb-driver-core-5.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/mongodb/bson/5.0.1/bson-5.0.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
