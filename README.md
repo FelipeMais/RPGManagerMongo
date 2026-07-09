@@ -8,9 +8,7 @@ Como iniciar o projeto:
 
 2 - Rodar script de inserção dos dados ficticios (utilizar mock data.sql)
 
-3 - Abrir o projeto no intellij
+3 - Entrar na pasta out/artifacts/RPGManager_jar2 e rodar o java -jar RPGManager.jar
 
-4 - Rodar o projeto
-
-5 - Inserir, usuário (caso possua), senha, host e porta, e o nome do banco de dados
+4 - Inserir, usuário (caso possua), senha, host e porta, e o nome do banco de dados
 
