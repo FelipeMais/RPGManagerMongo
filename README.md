@@ -4,13 +4,13 @@
 
 Como iniciar o projeto:
 
-1 - Criar um conexão ao banco de dados postgress, com usuário, senha, servidor;
+1 - Baixar o mongoDBCompass (Gerenciador o mongoDB)
 
-2 - Rodar script de criação das tabelas do projeto, no banco criado (utilizar criação db.sql)
+2 - Rodar script de inserção dos dados ficticios (utilizar mock data.sql)
 
-3 - Rodar script de inserção dos dados ficticios (utilizar mock data.sql)
+3 - Abrir o projeto no intellij
 
-4 - Ir para a pasta onde se localiza o projeto na sua maquina, depois entrar na pasta out/artifacts/RPGManager_jar e rodar o .jar (java -jar .\RPGManager.jar)
+4 - Rodar o projeto
 
-5- Com o projeto rodando basta inserir o usuário, senha e a url da conexão do banco de dados (definadas na primeira etapa), e utilizar o programa)
+5 - Inserir, usuário (caso possua), senha, host e porta, e o nome do banco de dados
 
