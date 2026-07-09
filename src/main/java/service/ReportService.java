@@ -113,7 +113,6 @@ public class ReportService extends MenuService {
 
             Integer actionTypeId = readCombatActionTypeFilter(scanner);
 
-            // Chamada Mágica: Traz os dados já formatados via JOIN
             List<model.dto.AcaoCombateDTO> actions = combatActionDAO.listReportByActorIdAndType(characterId, actionTypeId);
 
             System.out.println("\nRELATORIO DE ACOES DE COMBATE");
@@ -131,7 +130,6 @@ public class ReportService extends MenuService {
                 return true;
             }
 
-            // O código de montagem da tabela fica MUITO mais limpo usando o DTO
             String[] headers = {"COMBATE", "TURNO", "TIPO DE ACAO", "ALVO", "ITEM USADO", "MAGIA USADA", "RESULTADO"};
             int[] widths = {8, 7, 20, 20, 18, 18, 10};
             List<String[]> rows = new ArrayList<>();

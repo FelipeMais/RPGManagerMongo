@@ -111,13 +111,11 @@ public class InventoryMongoDAO implements InventoryDAO {
             throw new SQLException("Erro ao listar o inventário do personagem no MongoDB", e);
         }
 
-        // Ordenação em memória pelo nome do item
+
         inventoryItems.sort((a, b) -> a.getItem().getName().compareToIgnoreCase(b.getItem().getName()));
 
         return inventoryItems;
     }
-
-    // --- Método Auxiliar de Montagem Completa ---
 
     private InventoryItem fromDocument(Document invDoc) throws SQLException {
         Integer characterId = invDoc.getInteger("id_personagem");
