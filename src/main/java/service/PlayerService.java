@@ -9,10 +9,9 @@ import util.UI;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class PlayerService extends MenuService {
     private final PlayerDAO playerDAO;
@@ -47,7 +46,7 @@ public class PlayerService extends MenuService {
         return true;
     }
 
-    private Player instantiatePlayer(Boolean askId) {
+    private Player instantiatePlayer(Boolean askId) throws ParseException {
         Scanner scanner = new Scanner(System.in);
         Integer id = null;
         if (askId) {
@@ -65,10 +64,19 @@ public class PlayerService extends MenuService {
         System.out.print("Jogador ativo? (true/false): ");
         Boolean active = scanner.nextBoolean();
 
+        SimpleDateFormat formatador = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (askId) {
-            return new Player(id, name, Timestamp.valueOf(entryDate), active);
+            Date data = new Date();
+            if(entryDate != null && !entryDate.isEmpty()) {
+                data = formatador.parse(entryDate);
+            }
+            return new Player(id, name, data, active);
         }
-        return new Player(name, Timestamp.valueOf(entryDate), active);
+        Date data = new Date();
+        if(entryDate != null && !entryDate.isEmpty()) {
+            data = formatador.parse(entryDate);
+        }
+        return new Player(name, data, active);
     }
 
     private Boolean remove() {

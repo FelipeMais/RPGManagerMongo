@@ -3,11 +3,7 @@ package dao.postgres;
 import contracts.PlayerDAO;
 import model.Player;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +21,7 @@ public class PlayerSqlDAO implements PlayerDAO {
                 "INSERT INTO jogador(nome_jogador, data_entrada, ativo) VALUES (?, ?, ?)"
         );
         st.setString(1, newPlayer.getName());
-        st.setTimestamp(2, newPlayer.getEntryDate());
+        st.setTimestamp(2, new Timestamp(newPlayer.getEntryDate().getTime()));
         st.setBoolean(3, newPlayer.getActive());
         st.execute();
         st.close();
@@ -37,7 +33,7 @@ public class PlayerSqlDAO implements PlayerDAO {
                 "UPDATE jogador SET nome_jogador = ?, data_entrada = ?, ativo = ? WHERE id_jogador = ?"
         );
         st.setString(1, player.getName());
-        st.setTimestamp(2, player.getEntryDate());
+        st.setTimestamp(2, new Timestamp(player.getEntryDate().getTime()));
         st.setBoolean(3, player.getActive());
         st.setInt(4, player.getId());
         st.executeUpdate();
