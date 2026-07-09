@@ -3,18 +3,19 @@ package model;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Date;
 
 public class Player {
     private Integer id;
     private String name;
-    private Timestamp entryDate;
+    private Date entryDate;
     private Boolean active;
 
-    public Player(String name, Timestamp entryDate, Boolean active) {
+    public Player(String name, Date entryDate, Boolean active) {
         this(null, name, entryDate, active);
     }
 
-    public Player(Integer id, String name, Timestamp entryDate, Boolean active) {
+    public Player(Integer id, String name, Date entryDate, Boolean active) {
         this.id = id;
         this.name = name;
         this.entryDate = entryDate;
@@ -38,7 +39,7 @@ public class Player {
         return name;
     }
 
-    public Timestamp getEntryDate() {
+    public Date getEntryDate() {
         return entryDate;
     }
 

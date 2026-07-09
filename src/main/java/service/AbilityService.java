@@ -128,7 +128,7 @@ public class AbilityService extends MenuService {
         UI.printTable(headers, widths, rows);
     }
 
-    private void detail(Ability ability) { // Replace T with the specific model
+    private void detail(Ability ability) {
         int width = 45;
         System.out.println("\n" + Colors.CYAN + "╔" + "═".repeat(width + 2) + "╗");
         UI.printRow(Colors.BOLD + ability.getName().toUpperCase(), width);

@@ -27,7 +27,7 @@ public class CharacterMongoDAO implements CharacterDAO {
 
     public CharacterMongoDAO(MongoDatabase database) {
         this.characterCollection = database.getCollection("personagem");
-        this.sheetCollection = database.getCollection("fichas"); // Necessário para findByClassAndSpecies
+        this.sheetCollection = database.getCollection("fichas");
         this.inventoryDAO = new InventoryMongoDAO(database);
     }
 
@@ -70,7 +70,7 @@ public class CharacterMongoDAO implements CharacterDAO {
             );
 
             characterCollection.updateOne(filter, updates);
-            // Nota: Mantido o comportamento da DAO SQL original, que não atualiza o inventário no update do personagem.
+
         } catch (MongoException e) {
             throw new SQLException("Erro ao atualizar personagem no MongoDB", e);
         }
@@ -79,7 +79,6 @@ public class CharacterMongoDAO implements CharacterDAO {
     @Override
     public void remove(Integer characterId) throws SQLException {
         try {
-            // Remove os itens do inventário antes de remover o personagem
             inventoryDAO.removeByCharacterId(characterId);
             characterCollection.deleteOne(Filters.eq("_id", characterId));
         } catch (MongoException e) {
@@ -117,7 +116,6 @@ public class CharacterMongoDAO implements CharacterDAO {
     public List<Character> findByClassAndSpecies(Integer classId, Integer speciesId) throws SQLException {
         List<Character> filteredCharacters = new ArrayList<>();
 
-        // Estratégia de "Join" na aplicação
         try (MongoCursor<Document> cursor = characterCollection.find().iterator()) {
             while (cursor.hasNext()) {
                 Document charDoc = cursor.next();
@@ -149,7 +147,6 @@ public class CharacterMongoDAO implements CharacterDAO {
     public List<CharacterWeight> findPersonagensComSobrecarga(BigDecimal limitePeso) throws SQLException {
         List<CharacterWeight> sobrecarregados = new ArrayList<>();
 
-        // Pega todos os personagens e calcula o peso total em memória
         List<Character> allCharacters = listAll();
 
         for (Character character : allCharacters) {
@@ -165,7 +162,6 @@ public class CharacterMongoDAO implements CharacterDAO {
                 }
             }
 
-            // Se o pesoTotal for maior que limitePeso
             if (pesoTotal.compareTo(limitePeso) > 0) {
                 sobrecarregados.add(new CharacterWeight(character, pesoTotal));
             }
@@ -173,8 +169,6 @@ public class CharacterMongoDAO implements CharacterDAO {
 
         return sobrecarregados;
     }
-
-    // --- Métodos Auxiliares ---
 
     private Integer nextCharacterId() {
         Document lastChar = characterCollection.find()
@@ -192,7 +186,6 @@ public class CharacterMongoDAO implements CharacterDAO {
             return;
         }
         for (InventoryItem inventoryItem : inventoryItems) {
-            // Reaproveita a inserção da DAO passando apenas os dados relacionais
             inventoryDAO.insert(inventoryItem);
         }
     }

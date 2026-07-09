@@ -98,7 +98,7 @@ public class AbilityMongoDAO implements AbilityDAO {
                 .first();
 
         if (lastAbility == null || lastAbility.getInteger("_id") == null) {
-            return 1; // Retorna 1 se a coleção estiver vazia
+            return 1;
         }
         return lastAbility.getInteger("_id") + 1;
     }
